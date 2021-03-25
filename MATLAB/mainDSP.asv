@@ -1,0 +1,17 @@
+clc;close all;clear all;
+%% Import data from specific data folder
+% Locate the folder containing the -csv files of interest
+dataFolderPath = "C:\Users\olive\Google Drive\sevenWeekProject\dataFromEmpaticaE4\data_malin_test";
+if ~isstring(dataFolderPath)
+    dataFolderPath = uigetdir();
+end
+
+% Locate meta data on all .csv files in folder
+fileMetaStruct = dir(fullfile(dataFolderPath,'*.csv'));
+
+
+fileDataStruct = cell(size(fileMetaStruct,1),2);
+for fileIdx = 1:size(fileMetaStruct,1)
+    fileDataStruct{fileIdx,1} = readtable(join([fileMetaStruct(fileIdx).folder, '\', fileMetaStruct(fileIdx).name],''));
+    fileDataStruct{fileIdx,2} = fileMetaStruct(fileIdx).name;
+end
