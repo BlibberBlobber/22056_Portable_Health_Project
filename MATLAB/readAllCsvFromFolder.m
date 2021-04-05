@@ -12,7 +12,7 @@ fileMetaStruct = dir(fullfile(dataFolderPath,'*.csv'));
 % Read all .csv files to tables in combined cell array
 fileDataCell = cell(size(fileMetaStruct,1),2);
 for fileIdx = 1:size(fileMetaStruct,1)
-    fileDataCell{fileIdx,1} = readtable(join([fileMetaStruct(fileIdx).folder, '\', fileMetaStruct(fileIdx).name],''));
+    fileDataCell{fileIdx,1} = readtable(join([fileMetaStruct(fileIdx).folder, '/', fileMetaStruct(fileIdx).name],''));
     fileDataCell{fileIdx,2} = fileMetaStruct(fileIdx).name;
 end
 end

@@ -2,7 +2,7 @@ clc; close all; clear all;
 %% Import data from specific data folder
 % Locate the folder containing the -csv files of interest
 % dataFolderPath = "C:\Users\olive\Google Drive\sevenWeekProject\dataFromEmpaticaE4\data_malin_test";
-% Note: If error occurs switch "/" (mac)  to "\" (windows) in mainDSP and readALlCsvFromFolder
+% If error occurs switch "/" (mac)  to "\" (windows) in mainDSP 
 
 root = fileparts(which(mfilename));
 addpath(genpath(fullfile(root,'Data')))
