@@ -60,21 +60,69 @@ for i = 1:size(fileDataCell,1)
     
 end
 
-%% Plot Accelerometer
-figure; hold on; grid on;
-plot(fileDataCell{1}.time, fileDataCell{1}.x);
-plot(fileDataCell{1}.time, fileDataCell{1}.y);
-plot(fileDataCell{1}.time, fileDataCell{1}.z);
-title("Accelerometer"); xlabel("Date"); ylabel("Amplitude");
+%% Plot E4 data
 
-%%
 figure; hold on; grid on;
-plot(fileDataCell{2}.time, fileDataCell{2}.amplitude)
-title(modalityFieldNames(2)); xlabel("xLabel"); ylabel("yLabel");
+for j = 2:6 % modalities
+    
+    % Plot Accelerometer
+    subplot(2,3,1)
+    plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
+    plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
+    plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
+    title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
+    % Plot everything else
+    subplot(2,3,j)
+    plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
+    title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
+    
+end
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
-%% Plot anything else
-% fileDataCell{i}.time
-% fileDataCell{i}.amplitude
+%% Define features with sliding window
+
+% Define length of sliding window
+% Note! Remember to define window size according to sampling frequency
+WINDOW_SIZE_ACC = 4; % 5 seconds
+WINDOW_SIZE = 59; % 60 seconds
+
+% Define features to calculate
+% Note! Add Feature folder to path
+acc_features = {@mean, @std};
+bvp_features = {@mean, @std};
+eda_features = {@mean, @std, @min, @max, @dynamic_range};
+hr_features = {@mean, @std};
+ibi_features = {@mean, @std};
+temp_features = {@mean, @std, @min, @max, @dynamic_range};
+
+% Calculate ACC features
+features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);
+features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features);
+features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features);
+
+% Calculate BVP, EDA, HR, IBI and TEMP features
+features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);
+features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE, eda_features);
+features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);
+features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
+features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

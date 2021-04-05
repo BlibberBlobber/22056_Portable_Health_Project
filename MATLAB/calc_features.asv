@@ -1,0 +1,15 @@
+function [out] = calc_features(raw, window_size, feature_funcs)
+% feature_funcs is a cell array of size(1, num_features)
+
+out = zeros(length(raw), size(feature_funcs,2));
+for k = 1:(length(raw)-window_size)
+    
+    window = raw(k:k+window_size);
+    
+    % Define features    
+    out(k,1) = mean(window);
+    out(k,2) = std(window);    
+end
+
+end
+
