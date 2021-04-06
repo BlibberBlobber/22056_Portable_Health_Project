@@ -9,7 +9,7 @@ addpath(genpath(fullfile(root,'Data')))
 clear root
 
 dataFolderList=dir("Data");
-dataFolderPath = pwd + "/Data/" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
+dataFolderPath = pwd + "\Data/" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
 
 [fileDataCell, dataFolderPath] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 
@@ -82,18 +82,18 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size 
 %% Define features with sliding window
 
 % Define length of sliding window
+% Note! Remember to define window size according to sampling frequency
 WINDOW_SIZE_ACC = 4; % 5 seconds
 WINDOW_SIZE = 59; % 60 seconds
 
-% Note! Remember to define window size according to sampling frequency
-
-% Define features
+% Define features to calculate
+% Note! Add Feature folder to path
 acc_features = {@mean, @std};
 bvp_features = {@mean, @std};
-eda_features = {@mean, @std};
+eda_features = {@mean, @std, @min, @max, @dynamic_range};
 hr_features = {@mean, @std};
 ibi_features = {@mean, @std};
-temp_features = {@mean, @std};
+temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
 % Calculate ACC features
 features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);
