@@ -12,12 +12,12 @@ clear root
 dataFolderList=dir("Data");
 if ispc()
     dataFolderPath = pwd + "\Data\" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
-    [fileDataCell, dataFolderPath] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
+    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
     dataFolderPath = pwd + "/Data/" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
-    [fileDataCell, dataFolderPath] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
+    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
-    [fileDataCell, dataFolderPath] = readAllCsvFromFolder(); % Optional input of folder path
+    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(); % Optional input of folder path
 end
 
 
