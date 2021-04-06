@@ -39,6 +39,19 @@ for j = 2:6 % modalities
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
+
+
+%% Calculate HR from BVP
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
+
+figure()
+hold on
+plot(fileDataCell{2}.time, filtOut_BVP,'b')
+plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'bo')
+hold off
+
+
+
 %% Define features with sliding window
 
 % Define length of sliding window
