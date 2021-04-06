@@ -1,4 +1,4 @@
-function [fileDataCell, dataFolderPath] = readAllCsvFromFolder(dataFolderPath)
+function [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath)
 %READALLCSVFROMFOLDER Reads all .csv files in folder and returns them as a
 %cell array of tables and respective filenames.
 %   Optional input: dataFolderPath
