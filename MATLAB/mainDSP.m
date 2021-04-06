@@ -22,7 +22,6 @@ end
 
 
 %% Plot E4 data
-
 figure; hold on; grid on;
 for j = 2:6 % modalities
     
