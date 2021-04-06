@@ -6,6 +6,7 @@ clc; close all; clear all;
 
 root = fileparts(which(mfilename));
 addpath(genpath(fullfile(root,'Data')))
+addpath(genpath(fullfile(root,'Features')))
 clear root
 
 dataFolderList=dir("Data");
