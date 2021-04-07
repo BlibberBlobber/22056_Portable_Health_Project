@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.22056_App">
-        <activity android:name=".Activities.MeasurementsActivity"></activity>
-        <activity android:name=".Activities.PatientListActivity" />
+        <activity android:name=".Activities.PatientListActivity"></activity>
+        <activity android:name=".Activities.MeasurementsActivity" />
         <activity android:name=".Activities.SignUpActivity" />
         <activity android:name=".Activities.LoginActivity">
             <intent-filter>

@@ -1,18 +1,15 @@
-package com.example.a22056_app;
+package com.example.a22056_app.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import com.example.a22056_app.R;
 
-public class MainActivity extends AppCompatActivity {
+public class PatientListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Hello my friends how are you doing?
-        //Daniels demo
-
+        setContentView(R.layout.activity_patient_list2);
     }
 }
