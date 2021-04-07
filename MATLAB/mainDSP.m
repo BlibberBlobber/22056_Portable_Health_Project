@@ -48,17 +48,22 @@ WINDOW_SIZE = 59; % 60 seconds
 
 % Define features to calculate
 % Note! Add Feature folder to path
-acc_features = {@mean, @std};
+acc_features = {@mean, @std, @abs_int}; % @peak_freq
+acc_sum_features = {@mean, @std, @abs_int};
 bvp_features = {@mean, @std};
 eda_features = {@mean, @std, @min, @max, @dynamic_range};
 hr_features = {@mean, @std};
 ibi_features = {@mean, @std};
-temp_features = {@mean, @std, @min, @max, @dynamic_range};
+temp_features = {@mean, @std, @min, @max, @dynamic_range}; 
 
 % Calculate ACC features
 features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);
 features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features);
 features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features);
+
+% Calculate ACC features summed over all axes (3D)
+acc_sum = fileDataCell{1}.x + fileDataCell{1}.y + fileDataCell{1}.z;
+features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);
 
 % Calculate BVP, EDA, HR, IBI and TEMP features
 features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);
@@ -68,20 +73,23 @@ features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_feature
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
 
+%% List of features we need to compute: 
 
+% ACC
+% peak frequency for each ACC axis (doesn't work)
 
+% EDA
+% Everything.. 
 
+% HR
+% Everything.. 
 
+% HRV
+% Everything.. 
 
-
-
-
-
-
-
-
-
-
+% TEMP
+% slope - note: The slope function in 'Features' gives difference between every point and not the
+% slope of the whole window.
 
 
 
