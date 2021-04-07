@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.LoginActivity">
-
+    tools:context=".Activities.SignUpActivity">
     <Button
         android:id="@+id/signInButton"
         android:layout_width="0dp"
@@ -18,7 +17,7 @@
         android:textColor="@android:color/background_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pwordTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordView" />
 
     <TextView
         android:id="@+id/textView"
@@ -35,7 +34,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/unameTextView"
+        android:id="@+id/usernameView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -60,10 +59,10 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/unameTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameView" />
 
     <EditText
-        android:id="@+id/pwordTextView"
+        android:id="@+id/passwordView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -88,6 +87,6 @@
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signInButton" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
