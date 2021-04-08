@@ -21,31 +21,31 @@ yf(1:100) = 0;
 
 %% Plot first part
 xlimits = [2.9*10^4, 3*10^4];
-% figure()
-% subplot(3,2,1)
-% plot(bvp)
-% ylabel('BVP')
+figure()
+subplot(3,2,1)
+plot(bvp)
+ylabel('BVP')
 % xlim(xlimits)
-% 
-% 
-% subplot(3,2,2)
-% plot(filtOut_BVP)
-% ylabel('BP filtered BVP')
+
+
+subplot(3,2,2)
+plot(filtOut_BVP)
+ylabel('BP filtered BVP')
 % xlim(xlimits)
-% 
-% subplot(3,2,3)
-% plot(y_div)
-% ylabel('Div')
+
+subplot(3,2,3)
+plot(y_div)
+ylabel('Div')
 % xlim(xlimits)
-% 
-% subplot(3,2,4)
-% plot(y_squared)
-% ylabel('Squared')
+
+subplot(3,2,4)
+plot(y_squared)
+ylabel('Squared')
 % xlim(xlimits)
-% 
-% subplot(3,2,5)
-% plot(yf)
-% ylabel('Integration')
+
+subplot(3,2,5)
+plot(yf)
+ylabel('Integration')
 % xlim(xlimits)
 
 figure()
@@ -82,10 +82,8 @@ ylabel("250ms threshold"); set(gca, 'FontSize',12);
 %%
 
 N = length(pksmpd); % length of found peaks, that we need to control
-Sthreshold = mean(yf(1:2*fs));   % init of signal threshold
-Nthreshold = mean(yf(1:2*fs))*1/2;  % init of Noise threshold
-disp(Sthreshold)
-disp(Nthreshold)
+Sthreshold = 500;%mean(yf(1:2*fs));   % init of signal threshold
+Nthreshold = 2*Sthreshold;  % init of Noise threshold
 
 Slevel = Sthreshold; % init signal level to signal threshold
 Nlevel = Nthreshold; % init noise level to noise threshold
@@ -165,8 +163,8 @@ for i = 1:N
             % T-wave
             if ((locsmpd(i) - peakIndex(HR)) <= round(0.36*fs))
                 % check slope of integrated signal 15 samples before peak and latest QRS slope to confirm T-wave
-                slope1 = mean(diff(yf(locsmpd(i) - 30 : locsmpd(i))));
-                slope2 = mean(diff(yf(peakIndex(HR) - 30 : peakIndex(HR))));
+                slope1 = mean(diff(yf(locsmpd(i) - 15 : locsmpd(i))));
+                slope2 = mean(diff(yf(peakIndex(HR) - 15 : peakIndex(HR))));
                 
                 % if it is smaller than 1/2 of the latest QRS slope it must
                 % be a T-wave (noise). And update the Noise level as it we
@@ -221,6 +219,13 @@ noise = 0;
 gb = 0;   
 
 end
+
+figure()
+hold on
+plot(yf)
+plot(locsmpd(1:length(Sthresholds)),Sthresholds)
+hold off
+ylabel('Integration')
 
 
 %Find out they required delay...
