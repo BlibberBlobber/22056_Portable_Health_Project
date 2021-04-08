@@ -43,8 +43,8 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size 
 
 % Define length of sliding window
 % Note! Remember to define window size according to sampling frequency
-WINDOW_SIZE_ACC = 4; % 5 seconds
-WINDOW_SIZE = 59; % 60 seconds
+WINDOW_SIZE_ACC = 5*32; % 5 seconds
+WINDOW_SIZE = 60; % 60 seconds
 
 % Define features to calculate
 % Note! Add Feature folder to path
