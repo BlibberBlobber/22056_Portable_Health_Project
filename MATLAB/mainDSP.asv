@@ -100,14 +100,14 @@ features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features)
 features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
-%% Plot EDA signal
-% 
-% threshold = 1; % (micro Siemens)
-% fs = 4; % sampling frequency (Hz)
-% distance = 0.5; % (Seconds)
-% 
-% % Plot
-% findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
+%%
+
+threshold = ; % (micro Siemens)
+fs = 4; % sampling frequency (Hz)
+distance = 0.5; % (Seconds)
+
+% Plot
+findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
 
 
