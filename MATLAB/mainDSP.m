@@ -7,18 +7,35 @@ clc; close all; clear all;
 root = fileparts(which(mfilename));
 addpath(genpath(fullfile(root,'Data')))
 addpath(genpath(fullfile(root,'Features')))
+addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
+
+participantIndex = 3;
 
 dataFolderList=dir("Data");
 if ispc()
-    dataFolderPath = pwd + "\Data\" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
-    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
+    dataFolderPath = pwd + "\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
-    dataFolderPath = pwd + "/Data/" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
+    dataFolderPath = pwd + "/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
     [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
     [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(); % Optional input of folder path
 end
+
+%% Get the segmentation data from quest files
+segmentFolderList=dir("Segment_Info");
+segmentFolderPath = pwd + "\Segment_Info\" + segmentFolderList(participantIndex).name;
+
+table = importSegmentInfo(segmentFolderPath, [2 4]);
+% Get Order of protocol and start and end times
+ORDER = table(1,2:6);
+START = str2double(table(2,2:6));
+END = str2double(table(3,2:6));
+
+segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
+
+[fileDataCell] = segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 
 %% Plot E4 data
@@ -31,11 +48,23 @@ for j = 2:6 % modalities
     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
+    
+    for l = 1:7 
+        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
+        xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
+        xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
+    end
+    
     % Plot everything else
     subplot(2,3,j)
     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
     
+    for l = 1:7 
+        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
+        xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
+        xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
+    end
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
@@ -67,7 +96,7 @@ bvp_features = {@mean, @std};
 eda_features = {@mean, @std, @min, @max, @dynamic_range};
 hr_features = {@mean, @std};
 ibi_features = {@mean, @std};
-temp_features = {@mean, @std, @min, @max, @dynamic_range}; 
+temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
 % Calculate ACC features
 features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);
@@ -86,19 +115,19 @@ features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_feature
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
 
-%% List of features we need to compute: 
+%% List of features we need to compute:
 
 % ACC
 % peak frequency for each ACC axis (doesn't work)
 
 % EDA
-% Everything.. 
+% Everything..
 
 % HR
-% Everything.. 
+% Everything..
 
 % HRV
-% Everything.. 
+% Everything..
 
 % TEMP
 % slope - note: The slope function in 'Features' gives difference between every point and not the
