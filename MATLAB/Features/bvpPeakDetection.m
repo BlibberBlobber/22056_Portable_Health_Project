@@ -21,43 +21,43 @@ yf(1:100) = 0;
 
 %% Plot first part
 xlimits = [2.9*10^4, 3*10^4];
-figure()
-subplot(3,2,1)
-plot(bvp)
-ylabel('BVP')
+% figure()
+% subplot(3,2,1)
+% plot(bvp)
+% ylabel('BVP')
+% % xlim(xlimits)
+% 
+% 
+% subplot(3,2,2)
+% plot(filtOut_BVP)
+% ylabel('BP filtered BVP')
+% % xlim(xlimits)
+% 
+% subplot(3,2,3)
+% plot(y_div)
+% ylabel('Div')
+% % xlim(xlimits)
+% 
+% subplot(3,2,4)
+% plot(y_squared)
+% ylabel('Squared')
+% % xlim(xlimits)
+% 
+% subplot(3,2,5)
+% plot(yf)
+% ylabel('Integration')
+% % xlim(xlimits)
+% 
+% figure()
+% subplot(2,1,1)
+% plot(filtOut_BVP)
+% ylabel('BP filtered BVP')
 % xlim(xlimits)
-
-
-subplot(3,2,2)
-plot(filtOut_BVP)
-ylabel('BP filtered BVP')
+% 
+% subplot(2,1,2)
+% plot(yf)
+% ylabel('Integration')
 % xlim(xlimits)
-
-subplot(3,2,3)
-plot(y_div)
-ylabel('Div')
-% xlim(xlimits)
-
-subplot(3,2,4)
-plot(y_squared)
-ylabel('Squared')
-% xlim(xlimits)
-
-subplot(3,2,5)
-plot(yf)
-ylabel('Integration')
-% xlim(xlimits)
-
-figure()
-subplot(2,1,1)
-plot(filtOut_BVP)
-ylabel('BP filtered BVP')
-xlim(xlimits)
-
-subplot(2,1,2)
-plot(yf)
-ylabel('Integration')
-xlim(xlimits)
 
 
 %% Fiducial Marks - Shows the plot of all found peaks and all found biggest peaks with a minimum peak distance to 40 samples (200ms)
@@ -67,17 +67,17 @@ yf = [0; yf];
 [pksmpd,locsmpd] = findpeaks(yf,'MINPEAKDISTANCE',round(fs*60/240));
 [pks,locs] = findpeaks(yf);
 
-figure()
-subplot(2,1,1); 
-plot(yf);  hold on;
-plot(locs,pks,'o')
-xlim(xlimits)
-ylabel("No threshold"); set(gca, 'FontSize',12);
-subplot(2,1,2); 
-plot(yf); hold on;
-plot(locsmpd,pksmpd,'o')
-xlim(xlimits)
-ylabel("250ms threshold"); set(gca, 'FontSize',12);
+% figure()
+% subplot(2,1,1); 
+% plot(yf);  hold on;
+% plot(locs,pks,'o')
+% xlim(xlimits)
+% ylabel("No threshold"); set(gca, 'FontSize',12);
+% subplot(2,1,2); 
+% plot(yf); hold on;
+% plot(locsmpd,pksmpd,'o')
+% xlim(xlimits)
+% ylabel("250ms threshold"); set(gca, 'FontSize',12);
 
 %%
 
