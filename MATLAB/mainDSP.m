@@ -256,7 +256,7 @@ fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
 
 
 %% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
 
 
 %% Compute SCL and SCR from EDA
@@ -325,13 +325,6 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 
 
 %% List of features we need to compute:
-
-
-% EDA
-% Everything..
-
-% HR
-% Everything..
 
 % HRV
 % Everything..
