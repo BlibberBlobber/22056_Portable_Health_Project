@@ -18,9 +18,9 @@ if ispc()
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
     dataFolderPath = pwd + "/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
-    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
+    [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
-    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(); % Optional input of folder path
+    [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
 end
 
 %% Get the segmentation data from quest files
