@@ -7,35 +7,18 @@ clc; close all; clear all;
 root = fileparts(which(mfilename));
 addpath(genpath(fullfile(root,'Data')))
 addpath(genpath(fullfile(root,'Features')))
-addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
-
-participantIndex = 3;
 
 dataFolderList=dir("Data");
 if ispc()
-    dataFolderPath = pwd + "\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
-    [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
+    dataFolderPath = pwd + "\Data\" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
+    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
-    dataFolderPath = pwd + "/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
-    [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
+    dataFolderPath = pwd + "/Data/" + dataFolderList(4).name; % The number should be 3:end and notes the folders containing data
+    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
-    [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
+    [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(); % Optional input of folder path
 end
-
-%% Get the segmentation data from quest files
-segmentFolderList=dir("Segment_Info");
-segmentFolderPath = pwd + "\Segment_Info\" + segmentFolderList(participantIndex).name;
-
-table = importSegmentInfo(segmentFolderPath, [2 4]);
-% Get Order of protocol and start and end times
-ORDER = table(1,2:6);
-START = str2double(table(2,2:6));
-END = str2double(table(3,2:6));
-
-segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
-
-[fileDataCell] = segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 %% Plot E4 data
 figure; hold on; grid on;
@@ -47,38 +30,17 @@ for j = 2:6 % modalities
     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
-    
-    for l = 1:5 
-        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
-        xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
-    end
-    
     % Plot everything else
     subplot(2,3,j)
     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
     
-    
-    xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
-    xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-    
-    %for l = 1:5 
-        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
-        %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
-    %end
-    
-    %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
-    %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
-    %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
-    
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
 %% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
 
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
 
 % figure()
 % hold on
@@ -117,7 +79,7 @@ eda_scl_features = {@mean, @std};
 eda_scr_features = {@mean, @std, @no_pks, @no_strong_pks};
 hr_features = {@mean, @std};
 ibi_features = {@mean, @std};
-temp_features = {@mean, @std, @min, @max, @dynamic_range};
+temp_features = {@mean, @std, @min, @max, @dynamic_range}; 
 
 % Calculate ACC features
 features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);
@@ -138,30 +100,18 @@ features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features)
 features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
-%% Plot EDA signal
-% 
-% threshold = 1; % (micro Siemens)
-% fs = 4; % sampling frequency (Hz)
-% distance = 0.5; % (Seconds)
-% 
-% % Plot
-% findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
+%%
+
+threshold = ; % (micro Siemens)
+fs = 4; % sampling frequency (Hz)
+distance = 0.5; % (Seconds)
+
+% Plot
+findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
 
 
 
-
-%% List of features we need to compute:
-
-
-% EDA
-% Everything..
-
-% HR
-% Everything..
-
-% HRV
-% Everything..
 
 
 
