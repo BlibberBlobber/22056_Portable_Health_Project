@@ -7,16 +7,12 @@ for i = 1:size(fileDataCell,1)
         
         data = fileDataCell{i};
         classList = nan(max(size(data.time)),1);
-        stressNoStress = zeros(max(size(data.time)),1);
+        stressNoStress = nan(max(size(data.time)),1);
         
         for l = 1:length(ORDER)
             samplesOfCurrentProcess = floor((END(l) - START(l))*60*fs(i));
             start = START(l)*60*fs(i);
             classList(start:start+samplesOfCurrentProcess) = l;
-            
-            if find(ORDER=="TSST")
-                stressNoStress(start:start+samplesOfCurrentProcess) = 1;
-            end
             
         end
         
@@ -25,7 +21,6 @@ for i = 1:size(fileDataCell,1)
     end
     
     data = addvars(data,classList,'NewVariableNames','Process');
-    data = addvars(data,stressNoStress,'NewVariableNames','Stress');
     
     fileDataCell{i} = data;
     
