@@ -17,9 +17,7 @@ for i = 1:size(fileDataCell,1)
             if find(ORDER=="TSST")
                 stressNoStress(start:start+samplesOfCurrentProcess) = 1;
             end
-            
         end
-        
     else
         continue;
     end

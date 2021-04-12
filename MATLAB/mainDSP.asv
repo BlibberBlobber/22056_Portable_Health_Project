@@ -60,19 +60,14 @@ for j = 2:6 % modalities
     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
     
-    
-    xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
-    xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-    
-    %for l = 1:5 
+    for l = 1:5 
         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
-        %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
-    %end
+        xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
+        xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
+    end
     
-    %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
-    %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
-    %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
+    area([fileDataCell{j}.time(1) + minutes(START(l)),dates(2)],[.4,.4],'facecolor',[.8,1,.8], ...
+    'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
     
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
@@ -80,7 +75,7 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size 
 
 
 %% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
 
 figure()
 hold on
@@ -101,7 +96,7 @@ WINDOW_SIZE = 60; % 60 seconds
 % Note! Add Feature folder to path
 acc_features = {@mean, @std, @abs_int}; % @peak_freq
 acc_sum_features = {@mean, @std, @abs_int};
-bvp_features = {@mean, @std};
+bvp_features = {@mean, @std, @bool};
 eda_features = {@mean, @std, @min, @max, @dynamic_range};
 hr_features = {@mean, @std};
 ibi_features = {@mean, @std};
