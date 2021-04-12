@@ -13,7 +13,6 @@ for i = 1:size(fileDataCell,1)
             start = START(l)*60*fs(i);
             classList(start:start+samplesOfCurrentProcess) = l;
             
-            
         end
         
     else

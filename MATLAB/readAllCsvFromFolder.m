@@ -63,7 +63,7 @@ for i = 1:size(fileDataCell,1)
             
             %data = table(tt,data.Variables');
             data.time = tt';
-            data.Properties.VariableNames = {'time','amplitude'};
+            data.Properties.VariableNames = {'amplitude','time'};
         end
     end
     

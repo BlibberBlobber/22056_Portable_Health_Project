@@ -49,7 +49,7 @@ for j = 2:6 % modalities
     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
     
-    for l = 1:7 
+    for l = 1:5 
         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
         xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
         xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
@@ -60,7 +60,7 @@ for j = 2:6 % modalities
     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
     
-    for l = 1:7 
+    for l = 1:5 
         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
         xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
         xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
