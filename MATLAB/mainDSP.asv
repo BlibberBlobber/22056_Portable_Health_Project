@@ -76,22 +76,6 @@ for j = 2:6 % modalities
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
-%% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
-
-
-
-%% Calculate HR from BVP
-% [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
-% 
-
-% figure()
-% hold on
-% plot(fileDataCell{2}.time, filtOut_BVP,'b')
-% plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'bo')
-% hold off
-
-
 %% Noise removal stategy 1
 % accFs = 32;
 % secsToSmooth = 15;
@@ -237,9 +221,6 @@ hold off
 grid on
 ylabel("ACC")
 
-
-
-
 ax4 = nexttile;
 plot(movmean(envelope(fileDataCell{2}.amplitude),64*4));
 grid on
@@ -254,14 +235,15 @@ linkaxes([ax1 ax2 ax3 ax4],'x')
 
 fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
 
-
 %% Calculate HR from BVP
+
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
 
-figure; hold on; grid on;
-%plot(fileDataCell{2}.amplitude)
-plot(filtOut_BVP)
-plot(peakIndex,filtOut_BVP(peakIndex),'o')
+figure()
+hold on
+plot(fileDataCell{2}.time, fileDataCell{2}.amplitude,'b')
+plot(fileDataCell{2}.time(peakIndex), fileDataCell{2}.amplitude(peakIndex),'bo')
+hold off
 
 %% Compute SCL and SCR from EDA
 
@@ -274,9 +256,13 @@ subplot(2,1,1)
 plot(fileDataCell{3}.time, eda,':','LineWidth',0.8)
 title('SCL'); xlabel("Time"); ylabel("Amplitude (\muS)"); hold on;
 plot(fileDataCell{3}.time, eda_scl)
+legend('SCL', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+
 subplot(2,1,2)
 plot(fileDataCell{3}.time, eda_scr)
 title('SCR'); xlabel("Time"); ylabel("Amplitude");
+
+legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
 
 %% Define features with sliding window
 
