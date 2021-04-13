@@ -1,4 +1,4 @@
-function [fileDataCell, modalityFieldNames] = readAllCsvFromFolder(dataFolderPath)
+function [fileDataCell, modalityFieldNames,fsList] = readAllCsvFromFolder(dataFolderPath)
 %READALLCSVFROMFOLDER Reads all .csv files in folder and returns them as a
 %cell array of tables and respective filenames.
 %   Optional input: dataFolderPath
@@ -20,6 +20,8 @@ end
 
 
 modalityFieldNames = string(zeros(1,size(fileDataCell,1)));
+fsList = nan(1,7);
+
 for fileIdx = 1:size(fileDataCell,1)
     modalityFieldNames(fileIdx) = convertCharsToStrings(fileDataCell{fileIdx,2}(1:end-4));
 end
@@ -36,7 +38,7 @@ for i = 1:size(fileDataCell,1)
             
             fs = data(2,1).Variables;
             sampleDuration = seconds(1/fs);
-            
+            fsList(i) = fs;
             data([1,2],:) = [];
             
             tt = time+sampleDuration:sampleDuration:time+sampleDuration*size(data,1);
@@ -48,17 +50,20 @@ for i = 1:size(fileDataCell,1)
             % Handle IBI
             tt = time+seconds(data(2:end,1).Variables);
             data([1],:) = [];
+            
             data.Var1 = tt;
             data.Properties.VariableNames = {'time','amplitude'};
         else
             % Handle other modalities
             fs = data(2,1).Variables;
             sampleDuration = seconds(1/fs);
-            
-            data([1,2],:) = [];
+            fsList(i) = fs;
+            data(1:2,:) = [];
             tt = time+sampleDuration:sampleDuration:time+sampleDuration*size(data,1);
-            data = table(tt,data.Variables');
-            data.Properties.VariableNames = {'time','amplitude'};
+            
+            %data = table(tt,data.Variables');
+            data.time = tt';
+            data.Properties.VariableNames = {'amplitude','time'};
         end
     end
     
