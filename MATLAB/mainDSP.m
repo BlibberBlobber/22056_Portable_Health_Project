@@ -88,7 +88,7 @@ figure()
 tiledlayout(2,1)
 ax1 = nexttile;
 hold on; 
-plot(tempBVP,');
+plot(tempBVP);
 plot(smoothedBvpEnvelope,'--');
 yline(threshBVPEnv,'-.r')
 hold off
@@ -112,13 +112,8 @@ linkaxes([ax1 ax2],'x')
 
 %% Calculate HR from BVP
 
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [true, true]);
 
-figure()
-hold on
-plot(fileDataCell{2}.time, fileDataCell{2}.amplitude,'b')
-plot(fileDataCell{2}.time(peakIndex), fileDataCell{2}.amplitude(peakIndex),'bo')
-hold off
 
 %% Compute SCL and SCR from EDA
 
