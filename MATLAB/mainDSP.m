@@ -212,12 +212,12 @@ linkaxes([ax2 ax3],'xy')
 
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
-
-figure()
-hold on
-plot(fileDataCell{2}.time, filtOut_BVP,'b')
-plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'bo')
-hold off
+% 
+% figure()
+% hold on
+% plot(fileDataCell{2}.time, filtOut_BVP,'b')
+% plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'bo')
+% hold off
 
 
 
