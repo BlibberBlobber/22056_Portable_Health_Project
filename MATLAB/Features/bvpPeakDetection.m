@@ -249,7 +249,7 @@ peakIndex = test_index;
 
 
 if plotBool(2)
-    figure(2)
+    figure()
     tiledlayout(2,1)
     ax1 = nexttile;
     hold on
