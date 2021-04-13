@@ -248,7 +248,7 @@ peakIndex = test_index;
 
 
 
-if plotBool
+if plotBool(2)
     figure(2)
     tiledlayout(2,1)
     ax1 = nexttile;
