@@ -75,7 +75,7 @@ features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features)
 features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features);
 
 % Calculate ACC features summed over all axes (3D)
-acc_sum = fileDataCell{1}.x + fileDataCell{1}.y + fileDataCell{1}.z;
+acc_sum = abs(fileDataCell{1}.x) + abs(fileDataCell{1}.y) + abs(fileDataCell{1}.z);
 features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);
 
 % Calculate BVP, EDA, HR, IBI and TEMP features
