@@ -172,46 +172,48 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size 
 % xlim(xPlotLim)
 
 %% Noise removal strategy 4
-threshBVPEnv = 30;
-bvpBoolBelowThresh = movmean(envelope(fileDataCell{2}.amplitude),64*4) < threshBVPEnv;
+% threshBVPEnv = 30;
+% bvpBoolBelowThresh = movmean(envelope(fileDataCell{2}.amplitude),64*4) < threshBVPEnv;
+% 
+% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
+% 
+% figure()
+% tiledlayout(2,2)
+% ax1 = nexttile;
+% hold on; 
+% plot(fileDataCell{2}.amplitude);
+% plot(envelope(fileDataCell{2}.amplitude),'--');
+% hold off
+% grid on
+% ylabel("BVP")
+% 
+% ax2 = nexttile;
+% hold on; 
+% plot(interpolAcc);
+% plot(envelope(interpolAcc),'--');
+% hold off
+% grid on
+% ylabel("ACC")
+% 
+% 
+% 
+% 
+% ax4 = nexttile;
+% plot(movmean(envelope(fileDataCell{2}.amplitude),64*4));
+% grid on
+% ylabel("BVP smoothed envelope")
+% 
+% ax3 = nexttile;
+% plot(movmean(envelope(interpolAcc),64*4));
+% grid on
+% ylabel("ACC smoothed envelope")
+% 
+% linkaxes([ax1 ax2 ax3 ax4],'x')
+% 
+% fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
 
-interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
-
-figure()
-tiledlayout(2,2)
-ax1 = nexttile;
-hold on; 
-plot(fileDataCell{2}.amplitude);
-plot(envelope(fileDataCell{2}.amplitude),'--');
-hold off
-grid on
-ylabel("BVP")
-
-ax2 = nexttile;
-hold on; 
-plot(interpolAcc);
-plot(envelope(interpolAcc),'--');
-hold off
-grid on
-ylabel("ACC")
-
-
-
-
-ax4 = nexttile;
-plot(movmean(envelope(fileDataCell{2}.amplitude),64*4));
-grid on
-ylabel("BVP smoothed envelope")
-
-ax3 = nexttile;
-plot(movmean(envelope(interpolAcc),64*4));
-grid on
-ylabel("ACC smoothed envelope")
-
-linkaxes([ax1 ax2 ax3 ax4],'x')
-
-fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
-
+threshBVPEnv = 30; sampleMean = 64*4;
+fileDataCell{2}.amplitude = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
 
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
