@@ -14,7 +14,7 @@ y_div = diff(filtOut_BVP);
 y_squared = y_div.^2;
 
 %% moving integration window
-wl = 30;
+wl = 5;
 yf = movsum(y_squared,wl);
 yf(1:100) = 0;
 
@@ -64,7 +64,7 @@ xlimits = [2.9*10^4, 3*10^4];
 %close all; clc;
 yf = [0; yf];
 
-[pksmpd,locsmpd] = findpeaks(yf,'MINPEAKDISTANCE',round(fs*60/240));
+[pksmpd,locsmpd] = findpeaks(yf,'MINPEAKDISTANCE', ceil(fs*0.2));
 [pks,locs] = findpeaks(yf);
 
 % figure()
@@ -82,7 +82,7 @@ yf = [0; yf];
 %%
 
 N = length(pksmpd); % length of found peaks, that we need to control
-Sthreshold = 500;%mean(yf(1:2*fs));   % init of signal threshold
+Sthreshold = 100;%mean(yf(1:2*fs));   % init of signal threshold
 Nthreshold = 2*Sthreshold;  % init of Noise threshold
 
 Slevel = Sthreshold; % init signal level to signal threshold
@@ -234,7 +234,7 @@ ylabel('Integration')
 test_index = peakIndex(peakIndex~=0);
 
 % correct for the delay the moving average made
-test_index = test_index-30;
+test_index = test_index-5;
 % the first peak is not gonna be a QRS peak..
 test_index(1) = 25;
 
@@ -244,11 +244,11 @@ test_index(1) = 25;
 % correct for misplaced peaks and skewedness
 for i=1:length(test_index)
    
-    temp_list = [test_index(i)-19 : test_index(i)+19];
+    temp_list = [test_index(i)-15 : test_index(i)+15];
     
     [val,in] = max(bvp(temp_list));
 
-    check = in - 20;
+    check = in - 16;
     
     if check == 0
         continue;
@@ -261,6 +261,26 @@ test_index(1) = [];
 %sum(QRS_index)
 peakIndex = test_index;
 %sum(QRS_index)
+
+time = length(bvp)/fs;
+tt = (0: 1/fs : time - 1/fs);
+
+
+% figure(4)
+% plot(tt,bvp); hold on;
+% scatter(tt(peakIndex),bvp(peakIndex))
+% 
+% 
+% figure(5)
+% plot(tt,yf); hold on;
+% plot(noisePeaks(1,:)./fs,noisePeaks(2,:), 'o','color', 'red'); hold on;
+% scatter(tt(peakIndex),yf(peakIndex),'m'); hold on;
+% plot(locsmpd./fs,Nlevels,'--r','LineWidth',2); hold on;
+% plot(locsmpd./fs,Slevels,'--g','LineWidth',2); hold on;
+% plot(locsmpd./fs,Sthresholds,'--b','LineWidth',2); hold on;
+% ylabel("Pan-Tompkins"); xlabel('Time [Seconds]'); set(gca, 'FontSize',12);
+% legend('Signal','Noise peaks','QRS','Noise level','Signal level','Signal threshold', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+% axis([150 200 0 350])
 end
 
 

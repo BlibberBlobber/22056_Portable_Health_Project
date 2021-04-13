@@ -76,22 +76,6 @@ for j = 2:6 % modalities
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
-%% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
-
-
-
-%% Calculate HR from BVP
-% [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
-% 
-
-% figure()
-% hold on
-% plot(fileDataCell{2}.time, filtOut_BVP,'b')
-% plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'bo')
-% hold off
-
-
 %% Noise removal stategy 1
 % accFs = 32;
 % secsToSmooth = 15;
@@ -237,9 +221,6 @@ hold off
 grid on
 ylabel("ACC")
 
-
-
-
 ax4 = nexttile;
 plot(movmean(envelope(fileDataCell{2}.amplitude),64*4));
 grid on
@@ -254,10 +235,15 @@ linkaxes([ax1 ax2 ax3 ax4],'x')
 
 fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
 
-
 %% Calculate HR from BVP
+
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
 
+figure()
+hold on
+plot(fileDataCell{2}.time, fileDataCell{2}.amplitude,'b')
+plot(fileDataCell{2}.time(peakIndex), fileDataCell{2}.amplitude(peakIndex),'bo')
+hold off
 
 %% Compute SCL and SCR from EDA
 
@@ -273,6 +259,8 @@ plot(fileDataCell{3}.time, eda_scl)
 subplot(2,1,2)
 plot(fileDataCell{3}.time, eda_scr)
 title('SCR'); xlabel("Time"); ylabel("Amplitude");
+
+legend()
 
 %% Define features with sliding window
 
