@@ -220,12 +220,6 @@ gb = 0;
 
 end
 
-figure()
-hold on
-plot(yf)
-plot(locsmpd(1:length(Sthresholds)),Sthresholds)
-hold off
-ylabel('Integration')
 
 
 %Find out they required delay...
@@ -261,6 +255,27 @@ test_index(1) = [];
 %sum(QRS_index)
 peakIndex = test_index;
 %sum(QRS_index)
+
+
+
+
+figure()
+tiledlayout(2,1)
+ax1 = nexttile;
+hold on
+plot(yf)
+plot(locsmpd(1:length(Sthresholds)),Sthresholds)
+hold off
+ylabel('Integration')
+
+ax2 = nexttile;
+disp(min(peakIndex))
+hold on
+plot(filtOut_BVP,'b')
+plot(peakIndex, filtOut_BVP(peakIndex),'bo')
+hold off
+
+linkaxes([ax1 ax2],'x')
 end
 
 
