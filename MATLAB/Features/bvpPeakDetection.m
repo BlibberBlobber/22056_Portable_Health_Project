@@ -14,7 +14,7 @@ y_div = diff(filtOut_BVP);
 y_squared = y_div.^2;
 
 %% moving integration window
-wl = 30;
+wl = 3;
 yf = movsum(y_squared,wl);
 yf(1:100) = 0;
 
