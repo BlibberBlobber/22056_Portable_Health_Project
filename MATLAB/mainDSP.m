@@ -83,7 +83,7 @@ threshBVPEnv = 30; sampleMean = 64*4;
 tempBVP = fileDataCell{2}.amplitude;
 [fileDataCell{2}.amplitude, smoothedBvpEnvelope] = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
 
-
+%% Plot of motion artifact removal
 figure()
 tiledlayout(2,1)
 ax1 = nexttile;
