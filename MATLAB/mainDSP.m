@@ -172,48 +172,45 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size 
 % xlim(xPlotLim)
 
 %% Noise removal strategy 4
-% threshBVPEnv = 30;
-% bvpBoolBelowThresh = movmean(envelope(fileDataCell{2}.amplitude),64*4) < threshBVPEnv;
-% 
-% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
-% 
-% figure()
-% tiledlayout(2,2)
-% ax1 = nexttile;
-% hold on; 
-% plot(fileDataCell{2}.amplitude);
-% plot(envelope(fileDataCell{2}.amplitude),'--');
-% hold off
-% grid on
-% ylabel("BVP")
-% 
-% ax2 = nexttile;
-% hold on; 
-% plot(interpolAcc);
-% plot(envelope(interpolAcc),'--');
-% hold off
-% grid on
-% ylabel("ACC")
-% 
-% 
-% 
-% 
-% ax4 = nexttile;
-% plot(movmean(envelope(fileDataCell{2}.amplitude),64*4));
-% grid on
-% ylabel("BVP smoothed envelope")
-% 
-% ax3 = nexttile;
-% plot(movmean(envelope(interpolAcc),64*4));
-% grid on
-% ylabel("ACC smoothed envelope")
-% 
-% linkaxes([ax1 ax2 ax3 ax4],'x')
-% 
-% fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
-
 threshBVPEnv = 30; sampleMean = 64*4;
-fileDataCell{2}.amplitude = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
+tempBVP = fileDataCell{2}.amplitude;
+[fileDataCell{2}.amplitude, smoothedBvpEnvelope] = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
+
+
+
+
+figure()
+tiledlayout(3,1)
+ax1 = nexttile;
+plot(fileDataCell{1}.time, sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2))
+grid on
+title("Accelerometer xyz-length - Unfiltered")
+legend(["ACC length"])
+
+
+ax2 = nexttile;
+hold on; 
+plot(fileDataCell{2}.time,tempBVP,'Color','#0072BD');
+plot(fileDataCell{2}.time,smoothedBvpEnvelope,'--','Color','#FF0000');
+yline(threshBVPEnv,'-.','Color','#D95319','LineWidth',1)
+hold off
+grid on
+title("Blood volume pulse - Unfiltered")
+legend(["BVP","Smoothed Envelope","Filter threshold"])
+
+
+ax3 = nexttile;
+hold on; 
+plot(fileDataCell{2}.time,fileDataCell{2}.amplitude,'Color','#0072BD');
+hold off
+grid on
+title("Blood volume pulse - Motion artifacts removed")
+legend(["BVP"])
+
+linkaxes([ax1 ax2],'x')
+linkaxes([ax2 ax3],'xy')
+
+% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
