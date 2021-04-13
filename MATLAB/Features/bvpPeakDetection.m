@@ -1,4 +1,4 @@
-function [peakIndex, filtOut_BVP] = bvpPeakDetection(bvp, fs)
+function [peakIndex, filtOut_BVP] = bvpPeakDetection(bvp, fs, plotBool)
 
 %% Make the bandpass filter like Pan-Tomkins do in the paper (at 5-11 instead of the wanted 5-15) using Bandpass(0.4Hz to 4 Hz) for PPG
 filtObj_iir = designfilt('bandpassiir','FilterOrder',16, ...
@@ -258,24 +258,28 @@ peakIndex = test_index;
 
 
 
+if plotBool
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    hold on
+    plot(yf)
+    plot(locsmpd(1:length(Sthresholds)),Sthresholds)
+    hold off
+    ylabel('Integration')
+    xlabel('Time [samples]')
+    legend(["Intgrated state of BVP","Signal threshold"])
 
-figure()
-tiledlayout(2,1)
-ax1 = nexttile;
-hold on
-plot(yf)
-plot(locsmpd(1:length(Sthresholds)),Sthresholds)
-hold off
-ylabel('Integration')
+    ax2 = nexttile;
+    hold on
+    plot(filtOut_BVP)
+    plot(peakIndex, filtOut_BVP(peakIndex),'o')
+    hold off
+    xlabel('Time [samples]')
+    legend(["Filtered BVP","Detected peaks"])
 
-ax2 = nexttile;
-disp(min(peakIndex))
-hold on
-plot(filtOut_BVP,'b')
-plot(peakIndex, filtOut_BVP(peakIndex),'bo')
-hold off
-
-linkaxes([ax1 ax2],'x')
+    linkaxes([ax1 ax2],'x')
+end
 end
 
 
