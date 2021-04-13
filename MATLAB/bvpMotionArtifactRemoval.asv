@@ -1,0 +1,8 @@
+function [outputArg1,outputArg2] = bvpMotionArtifactRemoval(threshBVPEnv,bvpAmplitude)
+%BVPMOTIONARTIFACTREMOVAL Summary of this function goes here
+%   Detailed explanation goes here
+bvpBoolBelowThresh = movmean(envelope(fileDataCell{2}.amplitude),64*4) < threshBVPEnv;
+
+bvpAmplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
+end
+
