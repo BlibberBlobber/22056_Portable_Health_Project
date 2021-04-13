@@ -211,7 +211,8 @@ linkaxes([ax1 ax2],'x')
 linkaxes([ax2 ax3],'xy')
 
 %% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64, [true, true]);
+close all;
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64, [false, true]);
 
 
 %% Define features with sliding window
