@@ -21,43 +21,33 @@ yf(1:100) = 0;
 
 %% Plot first part
 xlimits = [2.9*10^4, 3*10^4];
-% figure()
-% subplot(3,2,1)
-% plot(bvp)
-% ylabel('BVP')
-% % xlim(xlimits)
-% 
-% 
-% subplot(3,2,2)
-% plot(filtOut_BVP)
-% ylabel('BP filtered BVP')
-% % xlim(xlimits)
-% 
-% subplot(3,2,3)
-% plot(y_div)
-% ylabel('Div')
-% % xlim(xlimits)
-% 
-% subplot(3,2,4)
-% plot(y_squared)
-% ylabel('Squared')
-% % xlim(xlimits)
-% 
-% subplot(3,2,5)
-% plot(yf)
-% ylabel('Integration')
-% % xlim(xlimits)
-% 
-% figure()
-% subplot(2,1,1)
-% plot(filtOut_BVP)
-% ylabel('BP filtered BVP')
-% xlim(xlimits)
-% 
-% subplot(2,1,2)
-% plot(yf)
-% ylabel('Integration')
-% xlim(xlimits)
+
+if plotBool(1)
+    figure()
+    tiledlayout(3,2)
+    ax1 = nexttile;
+    plot(bvp)
+    ylabel('BVP')
+
+
+    ax2 = nexttile;
+    plot(filtOut_BVP)
+    ylabel('BP filtered BVP')
+
+    ax3 = nexttile;
+    plot(y_div)
+    ylabel('Div')
+
+    ax4 = nexttile;
+    plot(y_squared)
+    ylabel('Squared')
+
+    ax5 = nexttile;
+    plot(yf)
+    ylabel('Integration')
+    
+    linkaxes([ax1 ax2 ax3 ax4 ax5],'x')
+end
 
 
 %% Fiducial Marks - Shows the plot of all found peaks and all found biggest peaks with a minimum peak distance to 40 samples (200ms)
@@ -259,7 +249,7 @@ peakIndex = test_index;
 
 
 if plotBool
-    figure()
+    figure(2)
     tiledlayout(2,1)
     ax1 = nexttile;
     hold on
