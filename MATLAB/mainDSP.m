@@ -178,7 +178,7 @@ tempBVP = fileDataCell{2}.amplitude;
 
 
 
-
+%% Plot of BVP motion artifact removal
 figure()
 tiledlayout(3,1)
 ax1 = nexttile;
@@ -209,8 +209,6 @@ legend(["BVP"])
 
 linkaxes([ax1 ax2],'x')
 linkaxes([ax2 ax3],'xy')
-
-% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude', 64);
