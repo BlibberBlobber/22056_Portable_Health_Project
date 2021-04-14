@@ -112,7 +112,7 @@ linkaxes([ax1 ax2],'x')
 
 %% Calculate HR from BVP
 
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [true, true]);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, true]);
 
 
 %% Compute SCL and SCR from EDA
