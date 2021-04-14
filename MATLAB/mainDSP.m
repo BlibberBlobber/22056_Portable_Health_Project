@@ -110,19 +110,19 @@ linkaxes([ax1 ax2],'x')
 % interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, true]);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
-[oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV);
+[oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, true]);
 
 figure()
 hold on
-plot(fileDataCell{2}.time, filtOut_BVP)
-plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o')
-stem(oneCycleHRV2_time, zeros(length(oneCycleHRV2_time),1)+100, 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2);
-% xline(oneCycleHRV2_time)
+stem(oneCycleHRV2_time, zeros(length(oneCycleHRV2_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
+plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
+plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
+
 hold off
 xlabel('Time [samples]')
-legend(["Filtered BVP","Detected peaks"])
+legend(["End-peaks included in HRV","Filtered BVP","Detected peaks"])
 
 %% Compute SCL and SCR from EDA
 eda = fileDataCell{3}.amplitude;
