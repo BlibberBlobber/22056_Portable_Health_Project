@@ -39,15 +39,14 @@ segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 %% Plot E4 data
 figure; hold on; grid on;
-for j = 2:6 % modalities
-    
-    % Plot Accelerometer
+% Plot Accelerometer
     subplot(2,3,1)
     plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
     
+for j = 2:6 % modalities
     for l = 1:5 
         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
         xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
@@ -111,12 +110,21 @@ linkaxes([ax1 ax2],'x')
 % interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, true]);
+thrHRV = 250;
+[oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV);
 
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [true, true]);
-
+figure()
+hold on
+plot(fileDataCell{2}.time, filtOut_BVP)
+plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o')
+stem(oneCycleHRV2_time, zeros(length(oneCycleHRV2_time),1)+100, 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2);
+% xline(oneCycleHRV2_time)
+hold off
+xlabel('Time [samples]')
+legend(["Filtered BVP","Detected peaks"])
 
 %% Compute SCL and SCR from EDA
-
 eda = fileDataCell{3}.amplitude;
 eda_scl = movmean(eda,[51 0]); % EDA is sampled at 4 Hz; X samples backward
 eda_scr = eda - eda_scl;
