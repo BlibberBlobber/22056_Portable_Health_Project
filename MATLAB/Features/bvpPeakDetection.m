@@ -230,7 +230,7 @@ for i=1:length(test_index)
    
     temp_list = [test_index(i)-15 : test_index(i)+15];
     
-    [val,in] = max(bvp(temp_list));
+    [val,in] = max(filtOut_BVP(temp_list));
 
     check = in - 16;
     
@@ -245,6 +245,7 @@ test_index(1) = [];
 %sum(QRS_index)
 peakIndex = test_index;
 %sum(QRS_index)
+
 
 
 if plotBool(2)
