@@ -1,4 +1,4 @@
-function [oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,timeArray,fs, thrHRV)
+function [oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,timeArray,fs, thrHRV, plotBool)
 %CALCHRFROMPEAKS Summary of this function goes here
 %   Detailed explanation goes here
 interBeatInterval = diff(peakIndex)/fs;
@@ -17,25 +17,35 @@ beatsOfInterestAfterSecondStage = oneCycleHRV <= thrHRV;
 oneCycleHRV_secondStage = oneCycleHRV(beatsOfInterestAfterSecondStage);
 oneCycleHRV2_time = oneCycleHRV_time(beatsOfInterestAfterSecondStage);
 
-
-figure()
-tiledlayout(2,1)
-ax1 = nexttile;
-plot(oneCycleHRV_time, oneCycleHRV,'--.')
-ylabel("HRV [ms]")
-title("HR Interval filtered")
-ax2 = nexttile;
-plot(oneCycleHRV2_time, oneCycleHRV_secondStage,'--.')
-ylabel("HRV [ms]")
-title("HRV threshold filtered")
-hold off
-
-linkaxes([ax1 ax2],'x')
+% Determine the sections of interest that needs repair based on IBI from oneCycleHRV2_time
+ibiStage3 = diff(oneCycleHRV2_time); %ms
+ibiStage3_time = oneCycleHRV2_time(2:end);
 
 
+%% Plotting
+if plotBool(1)
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    plot(oneCycleHRV_time, oneCycleHRV,'--.')
+    ylabel("HRV [ms]")
+    title("HR Interval filtered")
+    ax2 = nexttile;
+    plot(oneCycleHRV2_time, oneCycleHRV_secondStage,'--.')
+    ylabel("HRV [ms]")
+    title("HRV threshold filtered")
+    hold off
+
+    linkaxes([ax1 ax2],'x')
+end
+
+if plotBool(2)
+    figure()
+    plot(ibiStage3_time,ibiStage3)
+    ylabel("HRV [ms]")
+    title("HRV from filtered including missing data")
+end
 
 
-
-hrAndTime = 0;
 end
 
