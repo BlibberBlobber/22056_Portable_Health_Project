@@ -1,4 +1,4 @@
-function [peakIndex, filtOut_BVP] = bvpPeakDetection(bvp, fs)
+function [peakIndex, filtOut_BVP] = bvpPeakDetection(bvp, fs, plotBool)
 
 %% Make the bandpass filter like Pan-Tomkins do in the paper (at 5-11 instead of the wanted 5-15) using Bandpass(0.4Hz to 4 Hz) for PPG
 filtObj_iir = designfilt('bandpassiir','FilterOrder',16, ...
@@ -21,43 +21,33 @@ yf(1:100) = 0;
 
 %% Plot first part
 xlimits = [2.9*10^4, 3*10^4];
-% figure()
-% subplot(3,2,1)
-% plot(bvp)
-% ylabel('BVP')
-% % xlim(xlimits)
-% 
-% 
-% subplot(3,2,2)
-% plot(filtOut_BVP)
-% ylabel('BP filtered BVP')
-% % xlim(xlimits)
-% 
-% subplot(3,2,3)
-% plot(y_div)
-% ylabel('Div')
-% % xlim(xlimits)
-% 
-% subplot(3,2,4)
-% plot(y_squared)
-% ylabel('Squared')
-% % xlim(xlimits)
-% 
-% subplot(3,2,5)
-% plot(yf)
-% ylabel('Integration')
-% % xlim(xlimits)
-% 
-% figure()
-% subplot(2,1,1)
-% plot(filtOut_BVP)
-% ylabel('BP filtered BVP')
-% xlim(xlimits)
-% 
-% subplot(2,1,2)
-% plot(yf)
-% ylabel('Integration')
-% xlim(xlimits)
+
+if plotBool(1)
+    figure()
+    tiledlayout(3,2)
+    ax1 = nexttile;
+    plot(bvp)
+    ylabel('BVP')
+
+
+    ax2 = nexttile;
+    plot(filtOut_BVP)
+    ylabel('BP filtered BVP')
+
+    ax3 = nexttile;
+    plot(y_div)
+    ylabel('Div')
+
+    ax4 = nexttile;
+    plot(y_squared)
+    ylabel('Squared')
+
+    ax5 = nexttile;
+    plot(yf)
+    ylabel('Integration')
+    
+    linkaxes([ax1 ax2 ax3 ax4 ax5],'x')
+end
 
 
 %% Fiducial Marks - Shows the plot of all found peaks and all found biggest peaks with a minimum peak distance to 40 samples (200ms)
@@ -220,12 +210,6 @@ gb = 0;
 
 end
 
-figure()
-hold on
-plot(yf)
-plot(locsmpd(1:length(Sthresholds)),Sthresholds)
-hold off
-ylabel('Integration')
 
 
 %Find out they required delay...
@@ -246,7 +230,7 @@ for i=1:length(test_index)
    
     temp_list = [test_index(i)-15 : test_index(i)+15];
     
-    [val,in] = max(bvp(temp_list));
+    [val,in] = max(filtOut_BVP(temp_list));
 
     check = in - 16;
     
@@ -262,25 +246,30 @@ test_index(1) = [];
 peakIndex = test_index;
 %sum(QRS_index)
 
-time = length(bvp)/fs;
-tt = (0: 1/fs : time - 1/fs);
 
 
-% figure(4)
-% plot(tt,bvp); hold on;
-% scatter(tt(peakIndex),bvp(peakIndex))
-% 
-% 
-% figure(5)
-% plot(tt,yf); hold on;
-% plot(noisePeaks(1,:)./fs,noisePeaks(2,:), 'o','color', 'red'); hold on;
-% scatter(tt(peakIndex),yf(peakIndex),'m'); hold on;
-% plot(locsmpd./fs,Nlevels,'--r','LineWidth',2); hold on;
-% plot(locsmpd./fs,Slevels,'--g','LineWidth',2); hold on;
-% plot(locsmpd./fs,Sthresholds,'--b','LineWidth',2); hold on;
-% ylabel("Pan-Tompkins"); xlabel('Time [Seconds]'); set(gca, 'FontSize',12);
-% legend('Signal','Noise peaks','QRS','Noise level','Signal level','Signal threshold', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
-% axis([150 200 0 350])
+if plotBool(2)
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    hold on
+    plot(yf)
+    plot(locsmpd(1:length(Sthresholds)),Sthresholds)
+    hold off
+    ylabel('Integration')
+    xlabel('Time [samples]')
+    legend(["Intgrated state of BVP","Signal threshold"])
+
+    ax2 = nexttile;
+    hold on
+    plot(filtOut_BVP)
+    plot(peakIndex, filtOut_BVP(peakIndex),'o')
+    hold off
+    xlabel('Time [samples]')
+    legend(["Filtered BVP","Detected peaks"])
+
+    linkaxes([ax1 ax2],'x')
+end
 end
 
 

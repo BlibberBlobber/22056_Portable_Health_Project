@@ -39,15 +39,14 @@ segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 %% Plot E4 data
 figure; hold on; grid on;
-for j = 2:6 % modalities
-    
-    % Plot Accelerometer
+% Plot Accelerometer
     subplot(2,3,1)
     plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
     
+for j = 2:6 % modalities
     for l = 1:5 
         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
         xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
@@ -76,177 +75,56 @@ for j = 2:6 % modalities
 end
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
-%% Noise removal stategy 1
-% accFs = 32;
-% secsToSmooth = 15;
-% smoothingNbSamples = secsToSmooth*accFs;
-% movMeanEnvDiffAcc = movmean(envelope(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2)),smoothingNbSamples);
-% 
-% accThresh = 66.5;
-% accBoolBelowThresh = movMeanEnvDiffAcc < accThresh;
-% 
-% 
-% xlimits = [fileDataCell{1}.time(25*60*accFs+1),fileDataCell{1}.time(36*60*accFs+1)];
-% 
-% figure
-% subplot(3,2,1)
-% hold on
-% plot(fileDataCell{1}.time + datenum(0,0,0,0,0,4), movMeanEnvDiffAcc)
-% yline(accThresh)
-% hold off
-% ylabel('movMean(Env(length(acc)))')
-% xlim(xlimits)
-% 
-% subplot(3,2,2)
-% plot(fileDataCell{1}.time,fileDataCell{1}.x)
-% ylabel('Acc x')
-% xlim(xlimits)
-% 
-% subplot(3,2,3)
-% hold on
-% plot(fileDataCell{2}.time,fileDataCell{2}.amplitude)
-% plot(fileDataCell{1}.time, accBoolBelowThresh*200)
-% hold off
-% ylabel('BVP')
-% xlim(xlimits)
-% 
-% subplot(3,2,4)
-% plot(fileDataCell{1}.time,fileDataCell{1}.y)
-% ylabel('Acc y')
-% xlim(xlimits)
-% 
-% subplot(3,2,5)
-% plot(fileDataCell{2}.time(4:end),fileDataCell{2}.amplitude(4:end) .* interp(double(accBoolBelowThresh),2)')
-% ylabel('Acc thresh filtered BVP')
-% xlim(xlimits)
-% 
-% subplot(3,2,6)
-% plot(fileDataCell{1}.time,fileDataCell{1}.z)
-% ylabel('Acc z')
-% xlim(xlimits)
-% 
-% 
-% fileDataCell{2}.amplitude(4:end) = fileDataCell{2}.amplitude(4:end) .* interp(double(accBoolBelowThresh),2)';
 
-%% Noise removal stategy 2
-% filtObj_iir = designfilt('bandpassiir','FilterOrder',16, ...
-%          'HalfPowerFrequency1',0.4,'HalfPowerFrequency2',4, ...
-%          'SampleRate',64);
-%      
-% xStart = 3*10^3;
-% xlimits = [xStart xStart+5*10^2];
-% figure()
-% subplot(3,1,1)
-% hold on
-% plot(fileDataCell{2}.amplitude)
-% plot(envelope(fileDataCell{2}.amplitude),'--')
-% ylabel("Raw BVP")
-% xlim(xlimits)
-% hold off
-% 
-% subplot(3,1,2)
-% plot(filter(filtObj_iir,fileDataCell{2}.amplitude./ (envelope(fileDataCell{2}.amplitude))))
-% ylabel("BVP/env(BVP)")
-% xlim(xlimits)
-% 
-% 
-% subplot(3,1,3)
-% plot(filter(filtObj_iir,fileDataCell{2}.amplitude./ (envelope(fileDataCell{2}.amplitude.^2))))
-% ylabel("BVP/env(BVP)^2")
-% xlim(xlimits)
-
-%% Noise removal stategy 3
-% method = "LMS";
-% stepSize = 0.6;
-% forgettingFactor = 0.4;
-% nbOfCoeff = 10;
-% 
-% xStart = 1*10^3+1;
-% xlimits = [xStart xStart+5*10^2];
-% 
-% dataOffset = 13;%samples
-% 
-% BVPSnip = fileDataCell{2}.amplitude(xlimits(1):xlimits(2));
-% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
-% accSnip = interpolAcc(xlimits(1)+dataOffset:xlimits(2)+dataOffset)';
-% 
-% Create filter obj
-% lms = dsp.LMSFilter('Length',nbOfCoeff, 'Method','Normalized LMS', 'StepSize',stepSize,'LeakageFactor',forgettingFactor);%,'InitialConditions',coeffInitCondition);
-% 
-% Filtering
-% [y,err,wtslms] = lms(accSnip'./mean(accSnip), BVPSnip');
-% xPlotLim = [0,510];
-% 
-% figure();
-% subplot(3,1,1)
-% plot(BVPSnip)
-% ylabel("BVP")
-% xlim(xPlotLim)
-% 
-% subplot(3,1,2)
-% plot(accSnip'./mean(accSnip))
-% ylabel("ACC")
-% xlim(xPlotLim)
-% 
-% subplot(3,1,3)
-% hold on
-% plot(BVPSnip)
-% plot(err)
-% hold off
-% legend(["BVP orig","BVP Filt"])
-% ylabel("BVP and err")
-% xlim(xPlotLim)
 
 %% Noise removal strategy 4
-threshBVPEnv = 30;
-bvpBoolBelowThresh = movmean(envelope(fileDataCell{2}.amplitude),64*4) < threshBVPEnv;
+threshBVPEnv = 30; sampleMean = 64*4;
+tempBVP = fileDataCell{2}.amplitude;
+[fileDataCell{2}.amplitude, smoothedBvpEnvelope] = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
 
-interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
-
+%% Plot of motion artifact removal
 figure()
-tiledlayout(2,2)
+tiledlayout(2,1)
 ax1 = nexttile;
 hold on; 
-plot(fileDataCell{2}.amplitude);
-plot(envelope(fileDataCell{2}.amplitude),'--');
+plot(tempBVP);
+plot(smoothedBvpEnvelope,'--');
+yline(threshBVPEnv,'-.r')
 hold off
 grid on
-ylabel("BVP")
+title("Blood volume pulse - Unfiltered")
+legend(["BVP","Smoothed Envelope","Filter threshold"])
 
 ax2 = nexttile;
 hold on; 
-plot(interpolAcc);
-plot(envelope(interpolAcc),'--');
+plot(fileDataCell{2}.amplitude);
 hold off
 grid on
-ylabel("ACC")
 
-ax4 = nexttile;
-plot(movmean(envelope(fileDataCell{2}.amplitude),64*4));
-grid on
-ylabel("BVP smoothed envelope")
+title("Blood volume pulse - Motion artifacts removed")
+legend(["BVP"])
 
-ax3 = nexttile;
-plot(movmean(envelope(interpolAcc),64*4));
-grid on
-ylabel("ACC smoothed envelope")
 
-linkaxes([ax1 ax2 ax3 ax4],'x')
+linkaxes([ax1 ax2],'x')
 
-fileDataCell{2}.amplitude = fileDataCell{2}.amplitude.*bvpBoolBelowThresh;
+% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
-
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
+thrHRV = 250;
+[oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, false]);
+[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, true]);
 
 figure()
 hold on
-plot(fileDataCell{2}.time, fileDataCell{2}.amplitude,'b')
-plot(fileDataCell{2}.time(peakIndex), fileDataCell{2}.amplitude(peakIndex),'bo')
+stem(oneCycleHRV2_time, zeros(length(oneCycleHRV2_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
+plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
+plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
 hold off
+xlabel('Time [samples]')
+legend(["End-peaks included in HRV","Filtered BVP","Detected peaks"])
 
 %% Compute SCL and SCR from EDA
-
 eda = fileDataCell{3}.amplitude;
 eda_scl = movmean(eda,[51 0]); % EDA is sampled at 4 Hz; X samples backward
 eda_scr = eda - eda_scl;
