@@ -10,7 +10,7 @@ addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
 
-participantIndex = 3;
+participantIndex = 4;
 
 dataFolderList=dir("Data");
 if ispc()
@@ -256,13 +256,18 @@ subplot(2,1,1)
 plot(fileDataCell{3}.time, eda,':','LineWidth',0.8)
 title('SCL'); xlabel("Time"); ylabel("Amplitude (\muS)"); hold on;
 plot(fileDataCell{3}.time, eda_scl)
-legend('SCL', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+
+%xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','red')
+%xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
+
+legend('EDA','SCL', 'Location','northeast','Box','on','Orientation','horizontal','FontSize',11)
 
 subplot(2,1,2)
 plot(fileDataCell{3}.time, eda_scr)
 title('SCR'); xlabel("Time"); ylabel("Amplitude");
-
-legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+%xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','red')
+%xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
+legend('SCR','Location','northeast','Box','on','Orientation','horizontal','FontSize',11)
 
 %% Define features with sliding window
 
@@ -309,8 +314,6 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % 
 % % Plot
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
-
-
 
 
 
