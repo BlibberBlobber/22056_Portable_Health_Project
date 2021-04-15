@@ -112,12 +112,11 @@ linkaxes([ax1 ax2],'x')
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
-[oneCycleHRV_secondStage, oneCycleHRV2_time] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, false]);
-[peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, true]);
+[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [true, true]);
 
 figure()
 hold on
-stem(oneCycleHRV2_time, zeros(length(oneCycleHRV2_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
+stem(oneCycleHRV_time, zeros(length(oneCycleHRV_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
 plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
 plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
 hold off
