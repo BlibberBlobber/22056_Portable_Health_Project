@@ -114,24 +114,23 @@ linkaxes([ax1 ax2],'x')
 thrHRV = 250;
 [oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, stage4HR_resampled, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, true]);
 
+%% Compare HR with Empatica HR
+figure()
+tiledlayout(2,1)
+ax1 = nexttile;
+plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+ylabel("HR [BPM]")
+title("Empatica HR")
+
+ax2 = nexttile;
+plot(stage4HR_time_resampled, stage4HR_resampled)
+ylabel("HR [BPM]")
+title("HR repaired")
+
+linkaxes([ax1 ax2],'x')
 
 %% Compute SCL and SCR from EDA
-eda = fileDataCell{3}.amplitude;
-eda_scl = movmean(eda,[51 0]); % EDA is sampled at 4 Hz; X samples backward
-eda_scr = eda - eda_scl;
-
-figure;
-subplot(2,1,1)
-plot(fileDataCell{3}.time, eda,':','LineWidth',0.8)
-title('SCL'); xlabel("Time"); ylabel("Amplitude (\muS)"); hold on;
-plot(fileDataCell{3}.time, eda_scl)
-legend('SCL', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
-
-subplot(2,1,2)
-plot(fileDataCell{3}.time, eda_scr)
-title('SCR'); xlabel("Time"); ylabel("Amplitude");
-
-legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
 
 %% Define features with sliding window
 
