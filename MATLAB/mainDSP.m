@@ -143,7 +143,7 @@ linkaxes([ax1 ax2],'x')
 
 
 %% Define features with sliding window
-n_features = 10;
+n_features = 12;
 features = cell(1,n_features);
 
 % Define length of sliding window
@@ -161,28 +161,28 @@ eda_scl_features = {@mean, @std};
 eda_scr_features = {@mean, @std, @no_pks, @no_strong_pks};
 hr_features = {@mean, @std};
 hrv_features_resampled = {@HRV_freq, @HRV_vlf, @HRV_lf, @HRV_hf, @HRV_ratio, @HRV_hf_norm, @HRV_lf_norm};
-ibi_features = {@mean, @std};
+%ibi_features = {@mean, @std};
 temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
 % Calculate ACC features
-features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features); 
-features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features); 
-features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features); 
+features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);                       features{1} = features_acc_x;
+features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features);                       features{2} = features_acc_y;
+features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features);                       features{3} = features_acc_z;
 % Calculate ACC features summed over all axes (3D)
-acc_sum = fileDataCell{1}.x + fileDataCell{1}.y + fileDataCell{1}.z;
-features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);
+acc_sum = fileDataCell{1}.x + fileDataCell{1}.y + fileDataCell{1}.z;                                    
+features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);                           features{4} = features_acc_sum;
 
 % Calculate BVP, EDA, HR, IBI and TEMP features
-features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);
+features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);                     features{5} = features_bvp;
 
-features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_features);
-features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);
-features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);
+features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_features);                 features{6} = features_eda;
+features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);                           features{7} = features_eda_scl;
+features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);                           features{8} = features_eda_scr;
 
-features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);
-features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled);
-features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
-features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
+features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);                       features{9} = features_hr;
+features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled); features{10} = features_hrv_frequency; 
+% features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);                     features{12} = features_ibi;
+features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);                   features{11} = features_temp;
 
 %% Plot EDA signal
 
@@ -198,7 +198,7 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % need to put all features in the same cell array to run through
 
 
-feature_length = 10000; % the length we want all the features to be
+feature_length = 3000; % the length we want all the features to be
 features_resampled = zeros(feature_length,n_features); 
 current_feature = 1;
 %M = size(features,1);
@@ -218,8 +218,24 @@ stress_interp = logical(interp1(linspace(0,1,size(stress,1)), double(stress'), (
 
 featureTable = array2table(features_resampled);
 
+featureTable.stress = stress_interp';
 
-%featureTable.Properties.VariableNames = [""];
+featureTable.Properties.VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
+    'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
+    'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
+    'acc_sum_mean' 'acc_sum_std' 'acc_sum_absint'...
+    'bvp_features_mean' 'bvp_features_std'...
+    'eda_features_mean' 'eda_features_std' 'eda_features_min' 'eda_features_max' 'eda_features_dynamic_range'...
+    'eda_scl_features_mean' 'eda_scl_features_std'...
+    'eda_scr_features_mean' 'eda_scr_features_std' 'eda_scr_features_no_pks' 'eda_scr_features_no_strong_peaks'...
+    'hr_features_mean' 'hr_features_std'...
+    'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
+    'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
+    'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
+    'stress'};
+
+%featureTable.Properties.VariableNames([1 2 3 4 5 6]) = {'acc_x_mean' 'acc_x_std' 'acc_x_int' ...
+%    'acc_z_mean' 'acc_z_std' 'acc_z_int'};
 
 
 
