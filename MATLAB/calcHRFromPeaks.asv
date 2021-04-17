@@ -1,4 +1,4 @@
-function [HRV_final, oneCycleHRV2_time_resampled, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,timeArray,fs, thrHRV, plotBool)
+function [oneCycleHRV_final, oneCycleHRV2_time_resampled, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,timeArray,fs, thrHRV, plotBool)
 %CALCHRFROMPEAKS Summary of this function goes here
 %   Detailed explanation goes here
 interBeatInterval = diff(peakIndex)/fs;
@@ -45,7 +45,6 @@ end
 % Fill gaps
 oneCycleHRV_fillgaps = fillgaps(oneCycleHRV_final,200,150);
 oneCycleHRV_fillgaps(oneCycleHRV_fillgaps<0) = 0;
-oneCycleHRV_fillgaps(oneCycleHRV_fillgaps>250) = 250;
 
 % Final heart rate variability
 HRV_final = oneCycleHRV_fillgaps;
@@ -93,22 +92,20 @@ if plotBool(2)
 end
 
 if plotBool(3)
-    figure() 
-    hold on;
+    figure; hold on;
     plot(oneCycleHRV2_time_resampled,oneCycleHRV_fillgaps)
     plot(oneCycleHRV2_time_resampled,oneCycleHRV_final)
+    axis tight
     title("Fill gaps")
     legend("Fillegaps","original")
 end
 
 if plotBool(4)
-    figure() 
-    hold on;
+    figure; hold on;
     plot(oneCycleHRV2_time_resampled,HRV_final)
     axis tight
     title("Heart rate variability")
     legend("HRV")
-    ylabel('RR interval (ms)')
 end
 
 
