@@ -112,17 +112,8 @@ linkaxes([ax1 ax2],'x')
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
-[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [true, true]);
+[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, stage4HR_resampled, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, true]);
 
-figure()
-hold on
-stem(oneCycleHRV_time, zeros(length(oneCycleHRV_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
-plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
-plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
-
-hold off
-xlabel('Time [samples]')
-legend(["End-peaks included in HRV","Filtered BVP","Detected peaks"])
 
 %% Compute SCL and SCR from EDA
 eda = fileDataCell{3}.amplitude;
