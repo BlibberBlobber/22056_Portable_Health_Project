@@ -112,34 +112,26 @@ linkaxes([ax1 ax2],'x')
 %% Calculate HR from BVP
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
-[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [true, true]);
+[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, stage4HR_resampled, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, true]);
 
+%% Compare HR with Empatica HR
 figure()
-hold on
-stem(oneCycleHRV_time, zeros(length(oneCycleHRV_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
-plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
-plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
-hold off
-xlabel('Time [samples]')
-legend(["End-peaks included in HRV","Filtered BVP","Detected peaks"])
+tiledlayout(2,1)
+ax1 = nexttile;
+plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+ylabel("HR [BPM]")
+title("Empatica HR")
+
+ax2 = nexttile;
+plot(stage4HR_time_resampled, stage4HR_resampled)
+ylabel("HR [BPM]")
+title("HR repaired")
+
+linkaxes([ax1 ax2],'x')
 
 %% Compute SCL and SCR from EDA
-eda = fileDataCell{3}.amplitude;
-eda_scl = movmean(eda,[51 0]); % EDA is sampled at 4 Hz; X samples backward
-eda_scr = eda - eda_scl;
+[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
 
-figure;
-subplot(2,1,1)
-plot(fileDataCell{3}.time, eda,':','LineWidth',0.8)
-title('SCL'); xlabel("Time"); ylabel("Amplitude (\muS)"); hold on;
-plot(fileDataCell{3}.time, eda_scl)
-legend('SCL', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
-
-subplot(2,1,2)
-plot(fileDataCell{3}.time, eda_scr)
-title('SCR'); xlabel("Time"); ylabel("Amplitude");
-
-legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
 
 %% Define features with sliding window
 

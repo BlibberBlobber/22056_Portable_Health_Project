@@ -1,0 +1,44 @@
+function [eda_scl,eda_scr] = edaRepairAndFeature(eda, time, motionErrorTimePairs, plotBool)
+%EDAREPAIRANDFEATURE Summary of this function goes here
+%   Detailed explanation goes here
+
+% Remove motion errors
+for errorIdx = 1:size(motionErrorTimePairs,1)
+    eda(isbetween(time, motionErrorTimePairs(errorIdx,1) ,motionErrorTimePairs(errorIdx,2))) = NaN;
+end
+
+% Repair motion errors
+eda = fillgaps(eda,200,150);
+
+% Calculate EDA features
+eda_scl = movmean(eda,[51 0]); % EDA is sampled at 4 Hz; X samples backward
+eda_scr = eda - eda_scl;
+
+if plotBool(1)
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    hold on
+    plot(time, eda,':','LineWidth',0.8)
+    stem(motionErrorTimePairs(:,1),repmat(2,length(motionErrorTimePairs),1),'g')
+    stem(motionErrorTimePairs(:,2),repmat(2,length(motionErrorTimePairs),1),'r')
+    plot(time, eda_scl)
+    hold off
+    title('SCL'); xlabel("Time"); ylabel("Amplitude (\muS)"); hold on;
+
+    % legend('SCL', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+
+
+    ax2 = nexttile;
+    hold on
+    plot(fileDataCell{3}.time, eda_scr)
+    stem(motionErrorTimePairs(:,1),repmat(0.5,length(motionErrorTimePairs),1),'g')
+    stem(motionErrorTimePairs(:,2),repmat(0.5,length(motionErrorTimePairs),1),'r')
+    hold off
+    title('SCR'); xlabel("Time"); ylabel("Amplitude");
+
+    % legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
+    linkaxes([ax1 ax2 ax3],'x')
+end
+end
+
