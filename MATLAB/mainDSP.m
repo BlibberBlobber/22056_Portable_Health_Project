@@ -151,6 +151,8 @@ title('SCR'); xlabel("Time"); ylabel("Amplitude");
 legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
 
 %% Define features with sliding window
+n_features = 10;
+features = cell(1,n_features);
 
 % Define length of sliding window
 WINDOW_SIZE_ACC = 5*32; % 5 seconds
@@ -159,7 +161,7 @@ WINDOW_SIZE_EDA = 60*4; % 60 seconds
 WINDOW_SIZE_HRV_resampled = 60*8; % 60 seconds
 
 % Define features to calculate
-acc_features = {@mean, @std, @abs_int};
+acc_features = {@mean, @std, @abs_int}; 
 acc_sum_features = {@mean, @std, @abs_int};
 bvp_features = {@mean, @std};
 eda_features = {@mean, @std, @min, @max, @dynamic_range};
@@ -199,10 +201,35 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % % Plot
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
-%% List of features we need to compute:
+%% Resample all features
 
-% HRV
-% Everything..
+% need to put all features in the same cell array to run through
+
+
+feature_length = 10000; % the lengt we ant all the features to be
+features_resampled = zeros(n_features,feature_length);
+current_feature = 1;
+
+for feature_cell = 1:M % run through cell with feature "types"
+    for feature = 1:n % run through the columns of features for every feature type
+        features_resampled(:,current_feature) = interp1(linspace(0,1,size(features_temp{M}(:,n))), features_temp{M}(:,n), (linspace(0,1,feature_length)));
+        
+        current_feature = current_feature + 1;
+    end
+end
+
+featureTable = array2table(features_resampled)
+
+featureTable.Properties.VariableNames = [""]
+
+
+
+
+
+
+
+
+
 
 
 
