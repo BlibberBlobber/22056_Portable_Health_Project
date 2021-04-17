@@ -179,7 +179,7 @@ features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_fea
 features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);
 features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);
 
-features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);
+features_hr = calc_features(stage4HR_resampled.amplitude, WINDOW_SIZE, hr_features);
 features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled);
 features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
