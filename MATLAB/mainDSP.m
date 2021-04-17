@@ -161,7 +161,6 @@ eda_scl_features = {@mean, @std};
 eda_scr_features = {@mean, @std, @no_pks, @no_strong_pks};
 hr_features = {@mean, @std};
 hrv_features_resampled = {@HRV_freq, @HRV_vlf, @HRV_lf, @HRV_hf, @HRV_ratio, @HRV_hf_norm, @HRV_lf_norm};
-ibi_features = {@mean, @std};
 temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
 % Calculate ACC features
@@ -169,7 +168,7 @@ features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features)
 features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features); 
 features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features); 
 % Calculate ACC features summed over all axes (3D)
-acc_sum = fileDataCell{1}.x + fileDataCell{1}.y + fileDataCell{1}.z;
+acc_sum = abs(fileDataCell{1}.x) + abs(fileDataCell{1}.y) + abs(fileDataCell{1}.z);
 features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);
 
 % Calculate BVP, EDA, HR, IBI and TEMP features
@@ -181,7 +180,6 @@ features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);
 
 features_hr = calc_features(stage4HR_resampled.amplitude, WINDOW_SIZE, hr_features);
 features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled);
-features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
 %% Plot EDA signal
