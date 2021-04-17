@@ -10,7 +10,7 @@ addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
 
-participantIndex = 4;
+participantIndex = 3;
 
 dataFolderList=dir("Data");
 if ispc()
@@ -110,18 +110,27 @@ linkaxes([ax1 ax2],'x')
 % interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
+
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
-[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [true, true]);
+[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, false, false, true]);
 
 figure()
-hold on
-stem(oneCycleHRV_time, zeros(length(oneCycleHRV_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
-plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
-plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
-hold off
-xlabel('Time [samples]')
-legend(["End-peaks included in HRV","Filtered BVP","Detected peaks"])
+hold on;
+plot(oneCycleHRV_time,oneCycleHRV)
+axis tight
+title("Heart rate variability")
+legend("HRV")
+ylabel('RR interval (ms)')
+
+% figure()
+% hold on
+% stem(oneCycleHRV_time, zeros(length(oneCycleHRV_time),1)+100,'Color','#EDB120', 'MarkerFaceColor', 'none', 'MarkerEdgeColor', 'none', 'LineWidth', 2)
+% plot(fileDataCell{2}.time, filtOut_BVP,'Color','#0072BD')
+% plot(fileDataCell{2}.time(peakIndex), filtOut_BVP(peakIndex),'o','Color', '#D95319')
+% hold off
+% xlabel('Time [samples]')
+% legend(["End-peaks included in HRV","Filtered BVP","Detected peaks"])
 
 %% Compute SCL and SCR from EDA
 eda = fileDataCell{3}.amplitude;
@@ -133,18 +142,13 @@ subplot(2,1,1)
 plot(fileDataCell{3}.time, eda,':','LineWidth',0.8)
 title('SCL'); xlabel("Time"); ylabel("Amplitude (\muS)"); hold on;
 plot(fileDataCell{3}.time, eda_scl)
-
-%xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','red')
-%xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-
-legend('EDA','SCL', 'Location','northeast','Box','on','Orientation','horizontal','FontSize',11)
+legend('SCL', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
 
 subplot(2,1,2)
 plot(fileDataCell{3}.time, eda_scr)
 title('SCR'); xlabel("Time"); ylabel("Amplitude");
-%xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','red')
-%xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-legend('SCR','Location','northeast','Box','on','Orientation','horizontal','FontSize',11)
+
+legend('SCL','SCR','QRS', 'Location','northoutside','Box','off','Orientation','horizontal','FontSize',11)
 
 %% Define features with sliding window
 
@@ -152,6 +156,7 @@ legend('SCR','Location','northeast','Box','on','Orientation','horizontal','FontS
 WINDOW_SIZE_ACC = 5*32; % 5 seconds
 WINDOW_SIZE = 60; % 60 samples
 WINDOW_SIZE_EDA = 60*4; % 60 seconds
+WINDOW_SIZE_HRV_resampled = 60*8; % 60 seconds
 
 % Define features to calculate
 acc_features = {@mean, @std, @abs_int};
@@ -161,6 +166,7 @@ eda_features = {@mean, @std, @min, @max, @dynamic_range};
 eda_scl_features = {@mean, @std};
 eda_scr_features = {@mean, @std, @no_pks, @no_strong_pks};
 hr_features = {@mean, @std};
+hrv_features_resampled = {@HRV_freq, @HRV_vlf, @HRV_lf, @HRV_hf, @HRV_ratio, @HRV_hf_norm, @HRV_lf_norm};
 ibi_features = {@mean, @std};
 temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
@@ -180,19 +186,18 @@ features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);
 features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);
 
 features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);
+features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled);
 features_ibi = calc_features(fileDataCell{5}.amplitude, WINDOW_SIZE, ibi_features);
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
 %% Plot EDA signal
-% 
+
 % threshold = 1; % (micro Siemens)
 % fs = 4; % sampling frequency (Hz)
 % distance = 0.5; % (Seconds)
-% 
+
 % % Plot
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
-
-
 
 %% List of features we need to compute:
 
