@@ -23,6 +23,11 @@ else
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
 end
 
+
+%% Remove first part of the data
+removeSecs = 5;
+fileDataCell = removeSignalStartPart(removeSecs,fileDataCell);
+
 %% Get the segmentation data from quest files
 segmentFolderList=dir("Segment_Info");
 segmentFolderPath = pwd + "\Segment_Info\" + segmentFolderList(participantIndex).name;
@@ -134,6 +139,8 @@ linkaxes([ax1 ax2],'x')
 
 %% Compute SCL and SCR from EDA
 [eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
+
+
 
 %% Define features with sliding window
 n_features = 10;
