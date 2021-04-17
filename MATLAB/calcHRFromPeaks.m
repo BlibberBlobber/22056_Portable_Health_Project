@@ -8,6 +8,8 @@ ibiTime = timeArray(2:end);
 beatsOfInterestAfterFirstStage = interBeatInterval >= 60/240 & interBeatInterval <= 60/20;
 boiTime = ibiTime(beatsOfInterestAfterFirstStage);
 
+%-------------------------------------------------------------------------------
+
 % Calculate first unfiltered HRV from abs of the 1st order peak diff
 oneCycleHRV = abs(diff(interBeatInterval(beatsOfInterestAfterFirstStage))).*10^3; % ms
 oneCycleHRV_time = boiTime(2:end);
@@ -41,7 +43,19 @@ for errorIdx = 1:size(motionErrorTimePairs,1)
     oneCycleHRV_final(isbetween(oneCycleHRV2_time_resampled, motionErrorTimePairs(errorIdx,1) ,motionErrorTimePairs(errorIdx,2))) = NaN;
 end
 
+% ----------------------------------------------------------------------------------------
 
+%% fill gaps experiment
+oneCycleHRV_fillgaps = fillgaps(oneCycleHRV_final,200,150); 
+oneCycleHRV_fillgaps(oneCycleHRV_fillgaps<0) = 0;
+oneCycleHRV_final_new = oneCycleHRV_fillgaps;
+
+figure; hold on;
+subplot(2,1,1)
+plot(oneCycleHRV_final)
+subplot(2,1,2)
+plot(oneCycleHRV_final_new)
+title("fill gaps experiment")
 
 %% Plotting
 if plotBool(1)
