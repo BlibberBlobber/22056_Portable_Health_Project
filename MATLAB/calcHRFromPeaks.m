@@ -1,4 +1,4 @@
-function [oneCycleHRV_final, oneCycleHRV2_time_resampled, motionErrorTimePairs] = calcHRFromPeaks(peakIndex,timeArray,fs, thrHRV, plotBool)
+function [oneCycleHRV_fillgaps, oneCycleHRV2_time_resampled, motionErrorTimePairs, stage4HR_resampled_fillgaps, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,timeArray,fs, thrHRV, plotBool)
 %CALCHRFROMPEAKS Summary of this function goes here
 %   Detailed explanation goes here
 interBeatInterval = diff(peakIndex)/fs;
@@ -36,39 +36,37 @@ motionErrorTimePairs = [boiStage4_time_start, boiStage4_time_end];
 
 oneCycleHRV_final = oneCycleHRV_secondStage_resampled;
 
-% Set missing data to NaN in resampled HRV 
+oneCycleHRV_final(oneCycleHRV_final>250) = 250;
+
+oneCycleHRV_final = movmean(oneCycleHRV_final,48);
+
+% Calculate HR
+stage4HR = seconds(60)./ibiStage3(~boiStage4); 
+stage4HR_time = ibiStage3_time(~boiStage4); 
+
+% Resample HR
+[stage4HR_resampled,stage4HR_time_resampled] = resample(stage4HR,stage4HR_time,rFs,1,1);
+
+stage4HR_resampled = movmean(stage4HR_resampled,48);
+
+
+
+% Set missing data to NaN in resampled HRV and HR
 for errorIdx = 1:size(motionErrorTimePairs,1)
     oneCycleHRV_final(isbetween(oneCycleHRV2_time_resampled, motionErrorTimePairs(errorIdx,1) ,motionErrorTimePairs(errorIdx,2))) = NaN;
+    stage4HR_resampled(isbetween(stage4HR_time_resampled, motionErrorTimePairs(errorIdx,1) ,motionErrorTimePairs(errorIdx,2))) = NaN;
 end
+
+oneCycleHRV_fillgaps = fillgaps(oneCycleHRV_final,200,150);
+oneCycleHRV_fillgaps(oneCycleHRV_fillgaps>250) = 250;
+oneCycleHRV_fillgaps(oneCycleHRV_fillgaps<0) = 0;
+
+stage4HR_resampled_fillgaps = fillgaps(stage4HR_resampled,200,150);
 
 
 
 %% Plotting
 if plotBool(1)
-    figure()
-    tiledlayout(2,1)
-    ax1 = nexttile;
-    hold on
-    plot(oneCycleHRV2_time_resampled, oneCycleHRV_secondStage_resampled,'--.')
-    stem(boiStage4_time_start,repmat(150,length(boiStage4_time_start),1),'g')
-    stem(boiStage4_time_end,repmat(150,length(boiStage4_time_end),1),'r')
-    hold off
-    ylabel("HRV [ms]")
-    title("HRV threshold filtered resampled 8Hz")
-    
-    ax2 = nexttile;
-    hold on
-    plot(oneCycleHRV2_time_resampled, oneCycleHRV_final,'--.')
-    stem(boiStage4_time_start,repmat(150,length(boiStage4_time_start),1),'g')
-    stem(boiStage4_time_end,repmat(150,length(boiStage4_time_end),1),'r')
-    hold off
-    ylabel("HRV [ms]")
-    title("HRV threshold filtered resampled 8Hz - Missing HRV set to NaN")
-
-    linkaxes([ax1 ax2],'x')
-end
-
-if plotBool(2)
     figure()
     tiledlayout(2,1)
     ax1 = nexttile;
@@ -84,6 +82,32 @@ if plotBool(2)
     
     linkaxes([ax1 ax2],'x')
 end
+
+if plotBool(2)
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    hold on
+    plot(oneCycleHRV2_time_resampled, oneCycleHRV_fillgaps)
+    stem(boiStage4_time_start,repmat(min(oneCycleHRV_fillgaps),length(boiStage4_time_start),1),'g')
+    stem(boiStage4_time_end,repmat(min(oneCycleHRV_fillgaps),length(boiStage4_time_end),1),'r')
+    hold off
+    ylabel("HRV [ms]")
+    title("HRV repaired")
+    
+    ax2 = nexttile;
+    hold on
+    plot(stage4HR_time_resampled, stage4HR_resampled_fillgaps)
+    stem(boiStage4_time_start,repmat(min(stage4HR_resampled_fillgaps),length(boiStage4_time_start),1),'g')
+    stem(boiStage4_time_end,repmat(min(stage4HR_resampled_fillgaps),length(boiStage4_time_end),1),'r')
+    hold off
+    ylabel("HR [BPM]")
+    title("HR repaired")
+
+    linkaxes([ax1 ax2],'x')
+end
+
+
 
 
 end
