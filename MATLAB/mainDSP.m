@@ -157,9 +157,9 @@ ibi_features = {@mean, @std};
 temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
 % Calculate ACC features
-features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);
-features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features);
-features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features);
+features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features); 
+features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features); 
+features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features); 
 % Calculate ACC features summed over all axes (3D)
 acc_sum = fileDataCell{1}.x + fileDataCell{1}.y + fileDataCell{1}.z;
 features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);
@@ -190,25 +190,28 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % need to put all features in the same cell array to run through
 
 
-feature_length = 10000; % the lengt we ant all the features to be
-features_resampled = zeros(n_features,feature_length);
+feature_length = 10000; % the length we want all the features to be
+features_resampled = zeros(feature_length,n_features); 
 current_feature = 1;
+%M = size(features,1);
 
-for feature_cell = 1:M % run through cell with feature "types"
+for feature_cell = 1:n_features % run through cell with feature "types"
+    n = size(features{feature_cell},2);
     for feature = 1:n % run through the columns of features for every feature type
-        features_resampled(:,current_feature) = interp1(linspace(0,1,size(features_temp{M}(:,n))), features_temp{M}(:,n), (linspace(0,1,feature_length)));
+        features_resampled(:,current_feature) = interp1(linspace(0,1,size(features{feature_cell}(:,feature),1)), features{feature_cell}(:,feature)', (linspace(0,1,feature_length)));
         
         current_feature = current_feature + 1;
     end
 end
 
-featureTable = array2table(features_resampled)
+stress = (fileDataCell{1,1}.Process==1);
 
-featureTable.Properties.VariableNames = [""]
+stress_interp = logical(interp1(linspace(0,1,size(stress,1)), double(stress'), (linspace(0,1,feature_length))));
+
+featureTable = array2table(features_resampled);
 
 
-
-
+%featureTable.Properties.VariableNames = [""];
 
 
 
