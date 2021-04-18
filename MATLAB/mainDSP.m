@@ -195,20 +195,17 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
 %% Resample all features
-
 % need to put all features in the same cell array to run through
 
 
-feature_length = 3000; % the length we want all the features to be
+feature_length = 3000; % The length we want all the features to be
 features_resampled = zeros(feature_length,n_features); 
 current_feature = 1;
-%M = size(features,1);
 
 for feature_cell = 1:n_features % run through cell with feature "types"
     n = size(features{feature_cell},2);
     for feature = 1:n % run through the columns of features for every feature type
         features_resampled(:,current_feature) = interp1(linspace(0,1,size(features{feature_cell}(:,feature),1)), features{feature_cell}(:,feature)', (linspace(0,1,feature_length)));
-        
         current_feature = current_feature + 1;
     end
 end
