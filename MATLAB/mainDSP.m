@@ -26,7 +26,7 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
 featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
 
 
-for participantIndex = 3:15
+parfor participantIndex = 3:15
     
     disp(join(["Data set ", string(participantIndex-2), " out of ", "13"],""))
     disp("Loading Data")
@@ -231,7 +231,7 @@ featureTable = [featureTable; featureTable_toJoin];
 
 end
 %%  Feature selection
-
+[idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
 figure()
 bar(scores(idx))
 set(gca, 'XTick', 1:size(featureTable,2)-1)
