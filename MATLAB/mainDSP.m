@@ -26,7 +26,7 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
 
 featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
 
-for participantIndex = 3:10
+for participantIndex = 7:10
 
 dataFolderList=dir("Data");
 if ispc()
@@ -221,21 +221,12 @@ disp("Resampling of features")
 
 featureTable_toJoin.Properties.VariableNames = VariableNames;
 
+writetable(featureTable_toJoin,'tabledata.csv','writeMode',"append");
+
 featureTable = [featureTable; featureTable_toJoin];
 
-%%  Feature selection
-[idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
-
-figure()
-bar(scores(idx))
-set(gca, 'XTick', 1:size(featureTable_toJoin,2)-1)
-set(gca,'XTickLabel',strrep({featureTable_toJoin.Properties.VariableNames{idx}},'_','-'));
-xtickangle(90)
-xlabel('Predictor rank')
-ylabel('Predictor importance score')
-
 end
-
+%%  Feature selection
 
 figure()
 bar(scores(idx))
@@ -244,6 +235,4 @@ set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'
 xtickangle(90)
 xlabel('Predictor rank')
 ylabel('Predictor importance score')
-
-
 
