@@ -11,7 +11,10 @@ end
 eda = fillgaps(eda,200,150);
 
 % Calculate EDA features
-eda_scl = movmean(eda,[51 0]); % EDA is sampled at 4 Hz; X samples backward
+movMeanLen = 51;
+eda_scl = movmean(eda,[movMeanLen 0]); % EDA is sampled at 4 Hz; X samples backward
+eda_scl = [eda_scl(ceil(movMeanLen/2):end);ones(floor(movMeanLen/2),1)*eda_scl(end)];
+% disp([size(eda), size(eda_scl)])
 eda_scr = eda - eda_scl;
 
 if plotBool(1)
