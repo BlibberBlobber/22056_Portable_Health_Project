@@ -1,5 +1,6 @@
 clc; close all; clear all;
 %% Import data from specific data folder
+disp("Loading Data")
 % Locate the folder containing the -csv files of interest
 % dataFolderPath = "C:\Users\olive\Google Drive\sevenWeekProject\dataFromEmpaticaE4\data_malin_test";
 % Note: If error occurs switch "/" (mac)  to "\" (windows) in mainDSP and readALlCsvFromFolder
@@ -23,12 +24,13 @@ else
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
 end
 
-
 %% Remove first part of the data
+disp("Removing initial data")
 removeSecs = 5;
 fileDataCell = removeSignalStartPart(removeSecs,fileDataCell);
 
 %% Get the segmentation data from quest files
+disp("Importing and implemnting data segment results")
 segmentFolderList=dir("Segment_Info");
 segmentFolderPath = pwd + "\Segment_Info\" + segmentFolderList(participantIndex).name;
 
@@ -43,106 +45,105 @@ segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 [fileDataCell] = segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 %% Plot E4 data
-figure; hold on; grid on;
-% Plot Accelerometer
-    subplot(2,3,1)
-    plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
-    plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
-    plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
-    title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
-    
-for j = 2:6 % modalities
-    for l = 1:5 
-        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
-        xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
-    end
-    
-    % Plot everything else
-    subplot(2,3,j)
-    plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
-    title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
-    
-    
-    xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
-    xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-    
-    %for l = 1:5 
-        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
-        %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
-    %end
-    
-    %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
-    %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
-    %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
-    
-end
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
-
-
+% figure; hold on; grid on;
+% % Plot Accelerometer
+%     subplot(2,3,1)
+%     plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
+%     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
+%     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
+%     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
+%     
+% for j = 2:6 % modalities
+%     for l = 1:5 
+%         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
+%         xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
+%         xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
+%     end
+%     
+%     % Plot everything else
+%     subplot(2,3,j)
+%     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
+%     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
+%     
+%     
+%     xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
+%     xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
+%     
+%     %for l = 1:5 
+%         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
+%         %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
+%         %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
+%     %end
+%     
+%     %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
+%     %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
+%     %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
+%     
+% end
+% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
 
 %% Noise removal strategy 4
+disp("Removing noise from BVP data")
 threshBVPEnv = 30; sampleMean = 64*4;
 tempBVP = fileDataCell{2}.amplitude;
 [fileDataCell{2}.amplitude, smoothedBvpEnvelope] = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
 
 %% Plot of motion artifact removal
-figure()
-tiledlayout(2,1)
-ax1 = nexttile;
-hold on; 
-plot(tempBVP);
-plot(smoothedBvpEnvelope,'--');
-yline(threshBVPEnv,'-.r')
-hold off
-grid on
-title("Blood volume pulse - Unfiltered")
-legend(["BVP","Smoothed Envelope","Filter threshold"])
-
-ax2 = nexttile;
-hold on; 
-plot(fileDataCell{2}.amplitude);
-hold off
-grid on
-
-title("Blood volume pulse - Motion artifacts removed")
-legend(["BVP"])
-
-
-linkaxes([ax1 ax2],'x')
-
-% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
+% figure()
+% tiledlayout(2,1)
+% ax1 = nexttile;
+% hold on; 
+% plot(tempBVP);
+% plot(smoothedBvpEnvelope,'--');
+% yline(threshBVPEnv,'-.r')
+% hold off
+% grid on
+% title("Blood volume pulse - Unfiltered")
+% legend(["BVP","Smoothed Envelope","Filter threshold"])
+% 
+% ax2 = nexttile;
+% hold on; 
+% plot(fileDataCell{2}.amplitude);
+% hold off
+% grid on
+% 
+% title("Blood volume pulse - Motion artifacts removed")
+% legend(["BVP"])
+% 
+% 
+% linkaxes([ax1 ax2],'x')
 
 %% Calculate HR from BVP
-
+disp("Calculating HR and HRV")
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
 
-[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, stage4HR_resampled, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, true]);
+[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, ...
+    stage4HR_resampled, stage4HR_time_resampled] = ...
+    calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), ...
+    64, thrHRV, [false, false]);
 
 %% Compare HR with Empatica HR
-figure()
-tiledlayout(2,1)
-ax1 = nexttile;
-plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
-ylabel("HR [BPM]")
-title("Empatica HR")
-
-ax2 = nexttile;
-plot(stage4HR_time_resampled, stage4HR_resampled)
-ylabel("HR [BPM]")
-title("HR repaired")
-
-linkaxes([ax1 ax2],'x')
-
+% figure()
+% tiledlayout(2,1)
+% ax1 = nexttile;
+% plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+% ylabel("HR [BPM]")
+% title("Empatica HR")
+% 
+% ax2 = nexttile;
+% plot(stage4HR_time_resampled, stage4HR_resampled)
+% ylabel("HR [BPM]")
+% title("HR repaired")
+% 
+% linkaxes([ax1 ax2],'x')
 
 %% Compute SCL and SCR from EDA
-[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
-
-
+disp("Pre-processing of EDA")
+[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [false]);
 
 %% Define features with sliding window
+disp("Creating features")
 n_features = 10;
 features = cell(1,n_features);
 
@@ -178,7 +179,7 @@ features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_fea
 features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);
 features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);
 
-features_hr = calc_features(stage4HR_resampled.amplitude, WINDOW_SIZE, hr_features);
+features_hr = calc_features(stage4HR_resampled, WINDOW_SIZE, hr_features);
 features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled);
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
 
@@ -192,7 +193,7 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
 %% Resample all features
-
+disp("Resampling of features")
 % need to put all features in the same cell array to run through
 
 
@@ -218,6 +219,14 @@ featureTable = array2table(features_resampled);
 
 
 %featureTable.Properties.VariableNames = [""];
+
+
+%%  Feature selection
+[idx,scores] = fscmrmr(X,Y);
+
+bar(scores(idx))
+xlabel('Predictor rank')
+ylabel('Predictor importance score')
 
 
 
