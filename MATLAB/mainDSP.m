@@ -217,6 +217,11 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 %% Resample all features
 
 disp("Resampling of features")
+[featureTable_toJoin] = resampleAllFeatures(fileDataCell,features,n_features);
+
+featureTable_toJoin.Properties.VariableNames = VariableNames;
+
+featureTable = [featureTable; featureTable_toJoin];
 
 %%  Feature selection
 [idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
@@ -229,10 +234,10 @@ xtickangle(90)
 xlabel('Predictor rank')
 ylabel('Predictor importance score')
 
-[featureTable_toJoin] = resampleAllFeatures(fileDataCell,features,n_features);
-
-featureTable_toJoin.Properties.VariableNames = VariableNames;
-
-featureTable = [featureTable; featureTable_toJoin];
 end
+
+
+
+
+
 
