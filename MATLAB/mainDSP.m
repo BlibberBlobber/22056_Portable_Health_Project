@@ -6,6 +6,7 @@ clc; close all; clear all;
 
 root = fileparts(which(mfilename));
 addpath(genpath(fullfile(root,'Data')))
+addpath(genpath(fullfile(root,'Test')))
 addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
@@ -25,19 +26,19 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
 
 featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
 
-
-parfor participantIndex = 3:15
-    
-    disp(join(["Data set ", string(participantIndex-2), " out of ", "13"],""))
+dataFolderList=dir("Test\Data");
+parfor participantIndex = 3:length(dataFolderList)
+  
+    disp(join(["Data set ", string(participantIndex-2), " out of ", string(length(dataFolderList)-2)],""))
     disp("Loading Data")
 
 
-dataFolderList=dir("Data");
+
 if ispc()
-    dataFolderPath = pwd + "\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    dataFolderPath = pwd + "\Test\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
-    dataFolderPath = pwd + "/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    dataFolderPath = pwd + "/Test/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
@@ -231,12 +232,12 @@ featureTable = [featureTable; featureTable_toJoin];
 
 end
 %%  Feature selection
-[idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
-figure()
-bar(scores(idx))
-set(gca, 'XTick', 1:size(featureTable,2)-1)
-set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
-xtickangle(90)
-xlabel('Predictor rank')
-ylabel('Predictor importance score')
+% [idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
+% figure()
+% bar(scores(idx))
+% set(gca, 'XTick', 1:size(featureTable,2)-1)
+% set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
+% xtickangle(90)
+% xlabel('Predictor rank')
+% ylabel('Predictor importance score')
 
