@@ -144,7 +144,7 @@ disp("Pre-processing of EDA")
 
 %% Define features with sliding window
 disp("Creating features")
-n_features = 10;
+n_features = 12;
 features = cell(1,n_features);
 
 % Define length of sliding window
@@ -162,26 +162,29 @@ eda_scl_features = {@mean, @std};
 eda_scr_features = {@mean, @std, @no_pks, @no_strong_pks};
 hr_features = {@mean, @std};
 hrv_features_resampled = {@HRV_freq, @HRV_vlf, @HRV_lf, @HRV_hf, @HRV_ratio, @HRV_hf_norm, @HRV_lf_norm};
+
 temp_features = {@mean, @std, @min, @max, @dynamic_range};
 
 % Calculate ACC features
-features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features); 
-features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features); 
-features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features); 
+features_acc_x = calc_features(fileDataCell{1}.x, WINDOW_SIZE_ACC, acc_features);                       features{1} = features_acc_x;
+features_acc_y = calc_features(fileDataCell{1}.y, WINDOW_SIZE_ACC, acc_features);                       features{2} = features_acc_y;
+features_acc_z = calc_features(fileDataCell{1}.z, WINDOW_SIZE_ACC, acc_features);                       features{3} = features_acc_z;
 % Calculate ACC features summed over all axes (3D)
+
 acc_sum = abs(fileDataCell{1}.x) + abs(fileDataCell{1}.y) + abs(fileDataCell{1}.z);
-features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);
+features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);							features{4} = features_acc_sum;
 
 % Calculate BVP, EDA, HR, IBI and TEMP features
-features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);
+features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);                     features{5} = features_bvp;
 
-features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_features);
-features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);
-features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);
+features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_features);                 features{6} = features_eda;
+features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);                           features{7} = features_eda_scl;
+features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);                           features{8} = features_eda_scr;
 
-features_hr = calc_features(stage4HR_resampled, WINDOW_SIZE, hr_features);
-features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled);
-features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);
+features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);                       features{9} = features_hr;
+features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled); features{10} = features_hrv_frequency; 
+features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);                   features{11} = features_temp;
+
 
 %% Plot EDA signal
 
@@ -236,11 +239,11 @@ featureTable.Properties.VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint'
 
 
 %%  Feature selection
-[idx,scores] = fscmrmr(X,Y);
-
-bar(scores(idx))
-xlabel('Predictor rank')
-ylabel('Predictor importance score')
+% [idx,scores] = fscmrmr(X,Y);
+% 
+% bar(scores(idx))
+% xlabel('Predictor rank')
+% ylabel('Predictor importance score')
 
 
 
