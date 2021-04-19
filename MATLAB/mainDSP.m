@@ -140,7 +140,7 @@ thrHRV = 250;
 
 %% Compute SCL and SCR from EDA
 disp("Pre-processing of EDA")
-[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [false]);
+[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
 
 %% Define features with sliding window
 disp("Creating features")
@@ -184,7 +184,6 @@ features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);   
 features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);                       features{9} = features_hr;
 features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled); features{10} = features_hrv_frequency; 
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);                   features{11} = features_temp;
-
 
 %% Plot EDA signal
 
@@ -239,11 +238,15 @@ featureTable.Properties.VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint'
 
 
 %%  Feature selection
-% [idx,scores] = fscmrmr(X,Y);
-% 
-% bar(scores(idx))
-% xlabel('Predictor rank')
-% ylabel('Predictor importance score')
+[idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
+
+figure()
+bar(scores(idx))
+set(gca, 'XTick', 1:size(featureTable,2)-1)
+set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
+xtickangle(90)
+xlabel('Predictor rank')
+ylabel('Predictor importance score')
 
 
 
