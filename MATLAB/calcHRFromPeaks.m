@@ -29,8 +29,12 @@ ibiStage3_time = oneCycleHRV2_time(2:end);
 missingDataTimeThr = 60/20;
 boiStage4 = ibiStage3 >= seconds(missingDataTimeThr);
 
+boiStage4(1) = false;
+
+
 boiStage4_time_end = ibiStage3_time(boiStage4);
 boiStage4_time_start = ibiStage3_time([boiStage4(2:end);false]);
+
 
 motionErrorTimePairs = [boiStage4_time_start, boiStage4_time_end];
 
