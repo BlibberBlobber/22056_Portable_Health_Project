@@ -235,7 +235,6 @@ for i=1:length(test_index)
     %[val,in] = max(filtOut_BVP(temp_list));
     [val,in] = max(bvp(temp_list));
 
-
     check = in - 16;
     
     if check == 0

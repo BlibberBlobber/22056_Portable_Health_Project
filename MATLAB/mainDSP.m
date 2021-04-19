@@ -10,8 +10,23 @@ addpath(genpath(fullfile(root,'Data')))
 addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
+VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
+    'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
+    'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
+    'acc_sum_mean' 'acc_sum_std' 'acc_sum_absint'...
+    'bvp_features_mean' 'bvp_features_std'...
+    'eda_features_mean' 'eda_features_std' 'eda_features_min' 'eda_features_max' 'eda_features_dynamic_range'...
+    'eda_scl_features_mean' 'eda_scl_features_std'...
+    'eda_scr_features_mean' 'eda_scr_features_std' 'eda_scr_features_no_pks' 'eda_scr_features_no_strong_peaks'...
+    'hr_features_mean' 'hr_features_std'...
+    'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
+    'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
+    'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
+    'stress'};
 
-participantIndex = 3;
+featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
+
+for participantIndex = 3:5
 
 dataFolderList=dir("Data");
 if ispc()
@@ -45,6 +60,7 @@ segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 [fileDataCell] = segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 %% Plot E4 data
+
 % figure; hold on; grid on;
 % % Plot Accelerometer
 %     subplot(2,3,1)
@@ -123,6 +139,7 @@ thrHRV = 250;
     calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), ...
     64, thrHRV, [false, false]);
 
+
 %% Compare HR with Empatica HR
 % figure()
 % tiledlayout(2,1)
@@ -138,12 +155,15 @@ thrHRV = 250;
 % 
 % linkaxes([ax1 ax2],'x')
 
+
 %% Compute SCL and SCR from EDA
 disp("Pre-processing of EDA")
-[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
+[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [false]);
 
 %% Define features with sliding window
+
 disp("Creating features")
+
 n_features = 12;
 features = cell(1,n_features);
 
@@ -195,47 +215,8 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
 %% Resample all features
+
 disp("Resampling of features")
-% need to put all features in the same cell array to run through
-
-
-feature_length = 3000; % The length we want all the features to be
-features_resampled = zeros(feature_length,n_features); 
-current_feature = 1;
-
-for feature_cell = 1:n_features % run through cell with feature "types"
-    n = size(features{feature_cell},2);
-    for feature = 1:n % run through the columns of features for every feature type
-        features_resampled(:,current_feature) = interp1(linspace(0,1,size(features{feature_cell}(:,feature),1)), features{feature_cell}(:,feature)', (linspace(0,1,feature_length)));
-        current_feature = current_feature + 1;
-    end
-end
-
-stress = (fileDataCell{1,1}.Process==1);
-
-stress_interp = logical(interp1(linspace(0,1,size(stress,1)), double(stress'), (linspace(0,1,feature_length))));
-
-featureTable = array2table(features_resampled);
-
-featureTable.stress = stress_interp';
-
-featureTable.Properties.VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
-    'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
-    'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
-    'acc_sum_mean' 'acc_sum_std' 'acc_sum_absint'...
-    'bvp_features_mean' 'bvp_features_std'...
-    'eda_features_mean' 'eda_features_std' 'eda_features_min' 'eda_features_max' 'eda_features_dynamic_range'...
-    'eda_scl_features_mean' 'eda_scl_features_std'...
-    'eda_scr_features_mean' 'eda_scr_features_std' 'eda_scr_features_no_pks' 'eda_scr_features_no_strong_peaks'...
-    'hr_features_mean' 'hr_features_std'...
-    'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
-    'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
-    'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
-    'stress'};
-
-%featureTable.Properties.VariableNames([1 2 3 4 5 6]) = {'acc_x_mean' 'acc_x_std' 'acc_x_int' ...
-%    'acc_z_mean' 'acc_z_std' 'acc_z_int'};
-
 
 %%  Feature selection
 [idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
@@ -248,14 +229,10 @@ xtickangle(90)
 xlabel('Predictor rank')
 ylabel('Predictor importance score')
 
+[featureTable_toJoin] = resampleAllFeatures(fileDataCell,features,n_features);
 
+featureTable_toJoin.Properties.VariableNames = VariableNames;
 
-
-
-
-
-
-
-
-
+featureTable = [featureTable; featureTable_toJoin];
+end
 
