@@ -26,7 +26,7 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
 
 featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
 
-for participantIndex = 3:5
+for participantIndex = 3:10
 
 dataFolderList=dir("Data");
 if ispc()
@@ -228,8 +228,8 @@ featureTable = [featureTable; featureTable_toJoin];
 
 figure()
 bar(scores(idx))
-set(gca, 'XTick', 1:size(featureTable,2)-1)
-set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
+set(gca, 'XTick', 1:size(featureTable_toJoin,2)-1)
+set(gca,'XTickLabel',strrep({featureTable_toJoin.Properties.VariableNames{idx}},'_','-'));
 xtickangle(90)
 xlabel('Predictor rank')
 ylabel('Predictor importance score')
@@ -237,7 +237,13 @@ ylabel('Predictor importance score')
 end
 
 
-
+figure()
+bar(scores(idx))
+set(gca, 'XTick', 1:size(featureTable,2)-1)
+set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
+xtickangle(90)
+xlabel('Predictor rank')
+ylabel('Predictor importance score')
 
 
 
