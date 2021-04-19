@@ -1,6 +1,5 @@
 clc; close all; clear all;
 %% Import data from specific data folder
-disp("Loading Data")
 % Locate the folder containing the -csv files of interest
 % dataFolderPath = "C:\Users\olive\Google Drive\sevenWeekProject\dataFromEmpaticaE4\data_malin_test";
 % Note: If error occurs switch "/" (mac)  to "\" (windows) in mainDSP and readALlCsvFromFolder
@@ -26,7 +25,10 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
 
 featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
 
-for participantIndex = 3:10
+for participantIndex = 3:15
+    
+    disp(join(["Data set ", string(participantIndex-2), " out of ", "13"],""))
+    disp("Loading Data")
 
 dataFolderList=dir("Data");
 if ispc()
