@@ -231,12 +231,8 @@ for i=1:length(test_index)
     if test_index(i)+15 > size(bvp,1); continue; end
     temp_list = [test_index(i)-15 : test_index(i)+15];
     
-    disp(size(bvp))
-    disp((temp_list))
-    
     %[val,in] = max(filtOut_BVP(temp_list));
     [val,in] = max(bvp(temp_list));
-
 
     check = in - 16;
     

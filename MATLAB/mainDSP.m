@@ -9,8 +9,23 @@ addpath(genpath(fullfile(root,'Data')))
 addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
+VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
+    'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
+    'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
+    'acc_sum_mean' 'acc_sum_std' 'acc_sum_absint'...
+    'bvp_features_mean' 'bvp_features_std'...
+    'eda_features_mean' 'eda_features_std' 'eda_features_min' 'eda_features_max' 'eda_features_dynamic_range'...
+    'eda_scl_features_mean' 'eda_scl_features_std'...
+    'eda_scr_features_mean' 'eda_scr_features_std' 'eda_scr_features_no_pks' 'eda_scr_features_no_strong_peaks'...
+    'hr_features_mean' 'hr_features_std'...
+    'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
+    'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
+    'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
+    'stress'};
 
-participantIndex = 3;
+featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
+
+for participantIndex = 3:5
 
 dataFolderList=dir("Data");
 if ispc()
@@ -42,44 +57,44 @@ segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
 [fileDataCell] = segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
-%% Plot E4 data
-figure; hold on; grid on;
-% Plot Accelerometer
-    subplot(2,3,1)
-    plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
-    plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
-    plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
-    title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
-    
-for j = 2:6 % modalities
-    for l = 1:5 
-        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
-        xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
-    end
-    
-    % Plot everything else
-    subplot(2,3,j)
-    plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
-    title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
-    
-    
-    xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
-    xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-    
-    %for l = 1:5 
-        %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-        %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
-        %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
-    %end
-    
-    %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
-    %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
-    %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
-    
-end
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
-
+ %% Plot E4 data
+% figure; hold on; grid on;
+% % Plot Accelerometer
+%     subplot(2,3,1)
+%     plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
+%     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
+%     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
+%     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
+%     
+% for j = 2:6 % modalities
+%     for l = 1:5 
+%         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
+%         xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
+%         xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
+%     end
+%     
+%     % Plot everything else
+%     subplot(2,3,j)
+%     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
+%     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
+%     
+%     
+%     xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
+%     xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
+%     
+%     %for l = 1:5 
+%         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
+%         %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
+%         %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
+%     %end
+%     
+%     %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
+%     %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
+%     %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
+%     
+% end
+% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
+% 
 
 
 %% Noise removal strategy 4
@@ -88,57 +103,57 @@ tempBVP = fileDataCell{2}.amplitude;
 [fileDataCell{2}.amplitude, smoothedBvpEnvelope] = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
 
 %% Plot of motion artifact removal
-figure()
-tiledlayout(2,1)
-ax1 = nexttile;
-hold on; 
-plot(tempBVP);
-plot(smoothedBvpEnvelope,'--');
-yline(threshBVPEnv,'-.r')
-hold off
-grid on
-title("Blood volume pulse - Unfiltered")
-legend(["BVP","Smoothed Envelope","Filter threshold"])
-
-ax2 = nexttile;
-hold on; 
-plot(fileDataCell{2}.amplitude);
-hold off
-grid on
-
-title("Blood volume pulse - Motion artifacts removed")
-legend(["BVP"])
-
-
-linkaxes([ax1 ax2],'x')
-
-% interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
+% figure()
+% tiledlayout(2,1)
+% ax1 = nexttile;
+% hold on; 
+% plot(tempBVP);
+% plot(smoothedBvpEnvelope,'--');
+% yline(threshBVPEnv,'-.r')
+% hold off
+% grid on
+% title("Blood volume pulse - Unfiltered")
+% legend(["BVP","Smoothed Envelope","Filter threshold"])
+% 
+% ax2 = nexttile;
+% hold on; 
+% plot(fileDataCell{2}.amplitude);
+% hold off
+% grid on
+% 
+% title("Blood volume pulse - Motion artifacts removed")
+% legend(["BVP"])
+% 
+% 
+% linkaxes([ax1 ax2],'x')
+% 
+% % interpolAcc = interp(sqrt(fileDataCell{1}.x.^2 + fileDataCell{1}.y.^2 + fileDataCell{1}.z.^2),2);
 
 %% Calculate HR from BVP
 
 [peakIndex, filtOut_BVP] = bvpPeakDetection(fileDataCell{2}.amplitude, 64, [false, false]);
 thrHRV = 250;
 
-[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, stage4HR_resampled, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, true]);
+[oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, stage4HR_resampled, stage4HR_time_resampled] = calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), 64, thrHRV, [false, false]);
 
 %% Compare HR with Empatica HR
-figure()
-tiledlayout(2,1)
-ax1 = nexttile;
-plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
-ylabel("HR [BPM]")
-title("Empatica HR")
-
-ax2 = nexttile;
-plot(stage4HR_time_resampled, stage4HR_resampled)
-ylabel("HR [BPM]")
-title("HR repaired")
-
-linkaxes([ax1 ax2],'x')
+% figure()
+% tiledlayout(2,1)
+% ax1 = nexttile;
+% plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+% ylabel("HR [BPM]")
+% title("Empatica HR")
+% 
+% ax2 = nexttile;
+% plot(stage4HR_time_resampled, stage4HR_resampled)
+% ylabel("HR [BPM]")
+% title("HR repaired")
+% 
+% linkaxes([ax1 ax2],'x')
 
 
 %% Compute SCL and SCR from EDA
-[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [true]);
+[eda_scl,eda_scr] = edaRepairAndFeature(fileDataCell{3}.amplitude, fileDataCell{3}.time, motionErrorTimePairs, [false]);
 
 
 
@@ -195,54 +210,19 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 % findpeaks(eda_scr,fs,'MinPeakHeight',threshold, 'MinPeakDistance', distance);
 
 %% Resample all features
-% need to put all features in the same cell array to run through
+% Need to put all features in the same cell array to run through
 
+[featureTable_toJoin] = resampleAllFeatures(fileDataCell,features,n_features);
 
-feature_length = 3000; % The length we want all the features to be
-features_resampled = zeros(feature_length,n_features); 
-current_feature = 1;
+featureTable_toJoin.Properties.VariableNames = VariableNames;
 
-for feature_cell = 1:n_features % run through cell with feature "types"
-    n = size(features{feature_cell},2);
-    for feature = 1:n % run through the columns of features for every feature type
-        features_resampled(:,current_feature) = interp1(linspace(0,1,size(features{feature_cell}(:,feature),1)), features{feature_cell}(:,feature)', (linspace(0,1,feature_length)));
-        current_feature = current_feature + 1;
-    end
+featureTable = [featureTable; featureTable_toJoin];
 end
 
-stress = (fileDataCell{1,1}.Process==1);
-
-stress_interp = logical(interp1(linspace(0,1,size(stress,1)), double(stress'), (linspace(0,1,feature_length))));
-
-featureTable = array2table(features_resampled);
-
-featureTable.stress = stress_interp';
-
-featureTable.Properties.VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
-    'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
-    'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
-    'acc_sum_mean' 'acc_sum_std' 'acc_sum_absint'...
-    'bvp_features_mean' 'bvp_features_std'...
-    'eda_features_mean' 'eda_features_std' 'eda_features_min' 'eda_features_max' 'eda_features_dynamic_range'...
-    'eda_scl_features_mean' 'eda_scl_features_std'...
-    'eda_scr_features_mean' 'eda_scr_features_std' 'eda_scr_features_no_pks' 'eda_scr_features_no_strong_peaks'...
-    'hr_features_mean' 'hr_features_std'...
-    'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
-    'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
-    'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
-    'stress'};
-
-%featureTable.Properties.VariableNames([1 2 3 4 5 6]) = {'acc_x_mean' 'acc_x_std' 'acc_x_int' ...
-%    'acc_z_mean' 'acc_z_std' 'acc_z_int'};
 
 
 
 
 
 
-
-
-
-
-
-
+% features{feature_cell}(:,feature),1)
