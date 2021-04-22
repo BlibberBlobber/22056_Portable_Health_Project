@@ -32,8 +32,6 @@ parfor participantIndex = 3:length(dataFolderList)
     disp(join(["Data set ", string(participantIndex-2), " out of ", string(length(dataFolderList)-2)],""))
     disp("Loading Data")
 
-
-
 if ispc()
     dataFolderPath = pwd + "\Test\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
@@ -240,4 +238,29 @@ end
 % xtickangle(90)
 % xlabel('Predictor rank')
 % ylabel('Predictor importance score')
+
+%% Run models
+T = readtable('tabledata20210419Test.csv');
+yfit = FineKNN.predictFcn(T);
+model = "FineKNN";
+correct = sum(yfit == T.stress);
+Positive = sum(yfit);
+Negative = sum(abs((yfit-1)));
+TruePositive = sum(yfit.*T.stress);
+TrueNegative = sum((abs(yfit-1)).*abs((T.stress-1)));
+FalseNegative = sum((abs(yfit-1)).*abs((T.stress)));
+FalsePositive = sum((abs(yfit)).*abs((T.stress-1)));
+
+Accuracy = (TruePositive + TrueNegative)/(Positive+Negative); % correct/length(yfit);
+TPR = TruePositive/Positive;
+TNR = TrueNegative/Negative;
+
+fprintf("Model: %s \n", model)
+fprintf("Acc: %f %% \n", Accuracy*100)
+fprintf("TPR: %f %% \n", TPR*100)
+fprintf("TNR: %f %% \n", TNR*100)
+fprintf("\n")
+
+
+
 
