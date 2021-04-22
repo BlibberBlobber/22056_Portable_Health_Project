@@ -241,8 +241,9 @@ end
 
 %% Run models
 T = readtable('tabledata20210419Test.csv');
-yfit = FineKNN.predictFcn(T);
-model = "FineKNN";
+yfit = WeightedKNN.predictFcn(T);
+model = "WeightedKNN";
+
 correct = sum(yfit == T.stress);
 Positive = sum(yfit);
 Negative = sum(abs((yfit-1)));
