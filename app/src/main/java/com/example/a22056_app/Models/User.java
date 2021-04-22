@@ -2,18 +2,33 @@ package com.example.a22056_app.Models;
 
 public class User {
 
-    private String fullName, username, password, userType;
+    private String firstName, lastName, username, password, userType;
     private int userId;
 
-
-    public User(){}
-
-    public String getFullName() {
-        return fullName;
+    public User(String firstName, String lastName, String username, String password, String userType, int userId){
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.password = password;
+        this.userType = userType;
+        this.userId = userId;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {
