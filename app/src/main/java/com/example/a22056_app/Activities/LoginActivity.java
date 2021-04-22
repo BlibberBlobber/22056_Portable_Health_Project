@@ -38,11 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         system = Configuration.getConfigValue(LoginActivity.this,"system");
         headerTextView = findViewById(R.id.headerTextView);
         DataParser parser = new DataParser();
-        try {
-            parser.getData(getResources().openRawResource(R.raw.temp));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         if (system.equals("healthcare")){
             headerTextView.setText("Post Surgery Connect");
         }
