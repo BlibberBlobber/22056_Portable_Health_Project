@@ -254,8 +254,10 @@ ylabel('Predictor importance score')
 
 %% Run models
 T = readtable('tabledata20210419Test.csv');
+
 yfit = MediumGaussian.predictFcn(T);
 model = "MediumGaussian";
+
 correct = sum(yfit == T.stress);
 Positive = sum(yfit);
 Negative = sum(abs((yfit-1)));
