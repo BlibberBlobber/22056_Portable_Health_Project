@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -38,6 +40,12 @@ public class LoginActivity extends AppCompatActivity {
         system = Configuration.getConfigValue(LoginActivity.this,"system");
         headerTextView = findViewById(R.id.headerTextView);
         DataParser parser = new DataParser();
+        InputStream inputStream = getResources().openRawResource(R.raw.acc);
+        try {
+            parser.getData(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (system.equals("healthcare")){
             headerTextView.setText("Post Surgery Connect");
