@@ -27,22 +27,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-
 import java.util.ArrayList;
 
-
-
-import java.util.ArrayList;
 
 public class PatientListActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
     private EmpaDeviceManager deviceManager;
-    private ListView listView;
-    private Button addPatientButton;
-    private PatientListAdapter listAdapter;
-    Toolbar toolbar;
-    ProgressBar progressBar;
-
     private ListView listView;
     private Button addPatientButton;
     private PatientListAdapter listAdapter;

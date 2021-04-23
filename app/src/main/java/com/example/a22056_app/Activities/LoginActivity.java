@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.a22056_app.Tools.Configuration;
-import com.example.a22056_app.Tools.DataParser;
+
 import com.example.a22056_app.Tools.DatabaseHandler;
 import com.example.a22056_app.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         system = Configuration.getConfigValue(LoginActivity.this,"system");
         headerTextView = findViewById(R.id.headerTextView);
-        DataParser parser = new DataParser();
+
 
         if (system.equals("healthcare")){
             headerTextView.setText("Post Surgery Connect");
