@@ -1,13 +1,16 @@
-package com.example.a22056_app;
+package com.example.a22056_app.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.a22056_app.MeasurementDataSeries;
+import com.example.a22056_app.MeasurementsActivity;
+import com.example.a22056_app.R;
 import com.jjoe64.graphview.GraphView;
 
-public class MainActivity extends AppCompatActivity {
+public class GraphsActivity extends AppCompatActivity {
 
     private MeasurementDataSeries measurementDataSeries;
 
@@ -18,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("GraphError","Main");
 
-        MeasurementsActivity test = new MeasurementsActivity();
+        com.example.a22056_app.MeasurementsActivity test = new MeasurementsActivity();
         MeasurementDataSeries measurementDataSeries = new MeasurementDataSeries();
 
         try {
@@ -30,16 +33,16 @@ public class MainActivity extends AppCompatActivity {
             Log.i("GraphError", String.valueOf(e));
         }
 
-        GraphView graphView = (GraphView) findViewById(R.id.idGraphView);
+        //GraphView graphView = (GraphView) findViewById(R.id.idGraphView);
         //LineGraphSeries<DataPoint> data = measurementDataSeries.getData();
 
         // set colors and other options for the graph here
         // measurementDataSeries.setColor(getColor(R.color.TextColor)); From a color we save as a resource probably
 
-        graphView.addSeries(measurementDataSeries.getData());
+      //  graphView.addSeries(measurementDataSeries.getData());
 
-        graphView.getViewport().setScalable(true);
-        graphView.getViewport().setScrollable(true);
+       // graphView.getViewport().setScalable(true);
+       // graphView.getViewport().setScrollable(true);
 
     }
 }

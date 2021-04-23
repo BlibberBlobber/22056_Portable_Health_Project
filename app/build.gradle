@@ -45,4 +45,6 @@ dependencies {
     implementation 'com.opencsv:opencsv:5.4'
     implementation 'com.squareup.okhttp:okhttp:2.5.0'
     implementation 'com.empatica.empalink:E4link-1.0.0@aar'
+    implementation 'com.jjoe64:graphview:4.2.2'
+
 }

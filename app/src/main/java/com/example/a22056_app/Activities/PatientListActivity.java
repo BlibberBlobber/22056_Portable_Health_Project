@@ -129,6 +129,8 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     @Override
     public void didEstablishConnection() {
 
+        Log.d("Empatica", "Did establish connection");
+
     }
 
     @Override
@@ -138,6 +140,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
 
     @Override
     public void didDiscoverDevice(EmpaticaDevice device, String deviceLabel, int rssi, boolean allowed) {
+        Log.d("Empatica", "Did discover device");
 
     }
 

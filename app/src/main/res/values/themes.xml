@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
     <!-- Toolbar -->
-    <style name="ToolBarStyle" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="CustomToolBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:textSize">20sp</item>
