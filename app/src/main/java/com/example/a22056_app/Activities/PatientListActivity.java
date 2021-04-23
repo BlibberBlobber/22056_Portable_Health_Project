@@ -26,8 +26,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
+
 
 
 public class PatientListActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
@@ -132,6 +132,8 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     @Override
     public void didEstablishConnection() {
 
+        Log.d("Empatica", "Did establish connection");
+
     }
 
     @Override
@@ -141,6 +143,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
 
     @Override
     public void didDiscoverDevice(EmpaticaDevice device, String deviceLabel, int rssi, boolean allowed) {
+        Log.d("Empatica", "Did discover device");
 
     }
 
