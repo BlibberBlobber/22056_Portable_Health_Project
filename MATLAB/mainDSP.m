@@ -6,18 +6,39 @@ clc; close all; clear all;
 
 root = fileparts(which(mfilename));
 addpath(genpath(fullfile(root,'Data')))
+addpath(genpath(fullfile(root,'Test')))
 addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
 
-participantIndex = 3;
+VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
+    'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
+    'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
+    'acc_sum_mean' 'acc_sum_std' 'acc_sum_absint'...
+    'bvp_features_mean' 'bvp_features_std'...
+    'eda_features_mean' 'eda_features_std' 'eda_features_min' 'eda_features_max' 'eda_features_dynamic_range'...
+    'eda_scl_features_mean' 'eda_scl_features_std'...
+    'eda_scr_features_mean' 'eda_scr_features_std' 'eda_scr_features_no_pks' 'eda_scr_features_no_strong_peaks'...
+    'hr_features_mean' 'hr_features_std'...
+    'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
+    'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
+    'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
+    'stress'};
 
-dataFolderList=dir("Data");
+featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
+
+dataFolderList=dir("Test\Data");
+parfor participantIndex = 3:length(dataFolderList)
+  
+    disp(join(["Data set ", string(participantIndex-2), " out of ", string(length(dataFolderList)-2)],""))
+    disp("Loading Data")
+
+
 if ispc()
-    dataFolderPath = pwd + "\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    dataFolderPath = pwd + "\Test\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
-    dataFolderPath = pwd + "/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    dataFolderPath = pwd + "/Test/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
@@ -199,6 +220,54 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 
 
 
+end
+%%  Feature selection
+featuresColsOfInterest = 13:size(tabledata20210419TrainVal,2)-1;
+featuresToRemove = [13,14,15,16];
+for i = 1:length(featuresToRemove)
+    featuresColsOfInterest = featuresColsOfInterest(featuresColsOfInterest~=featuresToRemove(i));
+end
+
+[idx,scores] = fscmrmr(tabledata20210419TrainVal(:,featuresColsOfInterest),tabledata20210419TrainVal(:,end));
+figure()
+bar(scores(idx),0.4,'FaceColor',[0.7,0.7,0.7])
+set(gca, 'XTick', 1:length(featuresColsOfInterest))
+
+xticks = {'\mu_{SCL}','LF_{norm}','NSP_{SCR}','\sigma_{HR}','range_{TEMP}',...
+    '\sigma_{SCL}','f_{HRV}^{LF/HF}','\mu_{TEMP}','\mu_{HR}','f_{HRV}^{LF}',...
+    'min_{TEMP}','\sigma_{TEMP}','NP_{SCR}','max_{TEMP}','max_{EDA}',...
+    'range_{EDA}','\sigma_{SCR}','f_{HRV}^{ULF}','min_{EDA}','f_{HRV}^{HF}',...
+    '\Sigma_x^f','HF_{norm}'};
+set(gca,'XTickLabel',xticks);%strrep({tabledata20210419TrainVal(:,featuresColsOfInterest).Properties.VariableNames{idx}},'_','-'));
+xtickangle(90)
+
+xlabel('Features')
+ylabel('Predictor importance score')
+
+
+%% Run models
+T = readtable('tabledata20210419Test.csv');
+
+yfit = MediumGaussian.predictFcn(T);
+model = "MediumGaussian";
+
+correct = sum(yfit == T.stress);
+Positive = sum(yfit);
+Negative = sum(abs((yfit-1)));
+TruePositive = sum(yfit.*T.stress);
+TrueNegative = sum((abs(yfit-1)).*abs((T.stress-1)));
+FalseNegative = sum((abs(yfit-1)).*abs((T.stress)));
+FalsePositive = sum((abs(yfit)).*abs((T.stress-1)));
+
+Accuracy = (TruePositive + TrueNegative)/(Positive+Negative); % correct/length(yfit);
+TPR = TruePositive/Positive;
+TNR = TrueNegative/Negative;
+
+fprintf("Model: %s \n", model)
+fprintf("Acc: %f %% \n", Accuracy*100)
+fprintf("TPR: %f %% \n", TPR*100)
+fprintf("TNR: %f %% \n", TNR*100)
+fprintf("\n")
 
 
 
