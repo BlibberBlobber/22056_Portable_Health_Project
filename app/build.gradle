@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.a22056_app"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -43,4 +43,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.opencsv:opencsv:5.4'
+    implementation 'com.squareup.okhttp:okhttp:2.5.0'
+    implementation 'com.empatica.empalink:E4link-1.0.0@aar'
 }
