@@ -230,19 +230,32 @@ featureTable = [featureTable; featureTable_toJoin];
 
 end
 %%  Feature selection
-% [idx,scores] = fscmrmr(featureTable(:,1:end-1),featureTable(:,end));
-% figure()
-% bar(scores(idx))
-% set(gca, 'XTick', 1:size(featureTable,2)-1)
-% set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
-% xtickangle(90)
-% xlabel('Predictor rank')
-% ylabel('Predictor importance score')
+featuresColsOfInterest = 13:size(tabledata20210419TrainVal,2)-1;
+featuresToRemove = [13,14,15,16];
+for i = 1:length(featuresToRemove)
+    featuresColsOfInterest = featuresColsOfInterest(featuresColsOfInterest~=featuresToRemove(i));
+end
+
+[idx,scores] = fscmrmr(tabledata20210419TrainVal(:,featuresColsOfInterest),tabledata20210419TrainVal(:,end));
+figure()
+bar(scores(idx),0.4,'FaceColor',[0.7,0.7,0.7])
+set(gca, 'XTick', 1:length(featuresColsOfInterest))
+
+xticks = {'\mu_{SCL}','LF_{norm}','NSP_{SCR}','\sigma_{HR}','range_{TEMP}',...
+    '\sigma_{SCL}','f_{HRV}^{LF/HF}','\mu_{TEMP}','\mu_{HR}','f_{HRV}^{LF}',...
+    'min_{TEMP}','\sigma_{TEMP}','NP_{SCR}','max_{TEMP}','max_{EDA}',...
+    'range_{EDA}','\sigma_{SCR}','f_{HRV}^{ULF}','min_{EDA}','f_{HRV}^{HF}',...
+    '\Sigma_x^f','HF_{norm}'};
+set(gca,'XTickLabel',xticks);%strrep({tabledata20210419TrainVal(:,featuresColsOfInterest).Properties.VariableNames{idx}},'_','-'));
+xtickangle(90)
+
+xlabel('Features')
+ylabel('Predictor importance score')
 
 %% Run models
 T = readtable('tabledata20210419Test.csv');
-yfit = FineKNN.predictFcn(T);
-model = "FineKNN";
+yfit = MediumGaussian.predictFcn(T);
+model = "MediumGaussian";
 correct = sum(yfit == T.stress);
 Positive = sum(yfit);
 Negative = sum(abs((yfit-1)));
