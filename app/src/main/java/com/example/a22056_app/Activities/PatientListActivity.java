@@ -35,7 +35,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private ListView listView;
     private Button addPatientButton;
     private PatientListAdapter listAdapter;
-    Toolbar toolbar;
+   // Toolbar toolbar;
     ProgressBar progressBar;
 
     @Override
@@ -44,8 +44,8 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         setContentView(R.layout.activity_patient_list);
         deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
         deviceManager.authenticateWithAPIKey("81eb4118b7654dd68f7d47b280e7da2b");
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+       // toolbar = findViewById(R.id.toolbar);
+       // setSupportActionBar(toolbar);
         listView = findViewById(R.id.patientListView);
         progressBar = findViewById(R.id.progressBar2);
         addPatientButton = findViewById(R.id.addButton);
