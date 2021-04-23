@@ -25,7 +25,7 @@ public class MeasurementsActivity extends AppCompatActivity {
     public MeasurementsActivity(){}
 
     public void UpdateGraphviewWithData(){
-        graphView = (GraphView) findViewById(R.id.idGraphView);
+      /*  graphView = (GraphView) findViewById(R.id.idGraphView);
         //LineGraphSeries<DataPoint> data = measurementDataSeries.getData();
 
         // set colors and other options for the graph here
@@ -34,7 +34,7 @@ public class MeasurementsActivity extends AppCompatActivity {
         graphView.addSeries(measurementDataSeries.getData());
 
         graphView.getViewport().setScalable(true);
-        graphView.getViewport().setScrollable(true);
+        graphView.getViewport().setScrollable(true); */
     }
 
     private void checkPermissions(){
