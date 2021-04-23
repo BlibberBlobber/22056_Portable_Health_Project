@@ -11,10 +11,9 @@ addpath(genpath(fullfile(root,'Test')))
 addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of 98b6c7d (Revert "Merge remote-tracking branch 'origin/Daniel' into Daniel")
+
+
 VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
     'acc_y_mean' 'acc_y_std' 'acc_y_absint'...
     'acc_z_mean' 'acc_z_std' 'acc_z_absint'...
@@ -27,20 +26,18 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
     'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
     'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
     'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
-    'stress'};
+    'stress','time'};
 
-featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
+featureTable = array2table(nan(1,41),'VariableNames',VariableNames);
 
-<<<<<<< HEAD
 dataFolderList=dir("Test\Data");
+% dataFolderList=dir("Data");
 parfor participantIndex = 3:length(dataFolderList)
   
     disp(join(["Data set ", string(participantIndex-2), " out of ", string(length(dataFolderList)-2)],""))
     disp("Loading Data")
 
-=======
-for participantIndex = 7:10
->>>>>>> parent of 98b6c7d (Revert "Merge remote-tracking branch 'origin/Daniel' into Daniel")
+
 
 if ispc()
     dataFolderPath = pwd + "\Test\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
@@ -177,14 +174,15 @@ disp("Pre-processing of EDA")
 
 disp("Creating features")
 
-n_features = 12;
+n_features = 11;
 features = cell(1,n_features);
 
 % Define length of sliding window
-WINDOW_SIZE_ACC = 5*32; % 5 seconds
-WINDOW_SIZE = 60; % 60 samples
-WINDOW_SIZE_EDA = 60*4; % 60 seconds
-WINDOW_SIZE_HRV_resampled = 60*8; % 60 seconds
+winLenSec = 10;
+WINDOW_SIZE_ACC = winLenSec*32;
+WINDOW_SIZE_BVP = winLenSec*64;
+WINDOW_SIZE_EDA_TEMP = winLenSec*4;
+WINDOW_SIZE_HRV_resampled = winLenSec*8;
 
 % Define features to calculate
 acc_features = {@mean, @std, @abs_int}; 
@@ -208,15 +206,20 @@ acc_sum = abs(fileDataCell{1}.x) + abs(fileDataCell{1}.y) + abs(fileDataCell{1}.
 features_acc_sum = calc_features(acc_sum, WINDOW_SIZE_ACC, acc_sum_features);							features{4} = features_acc_sum;
 
 % Calculate BVP, EDA, HR, IBI and TEMP features
-features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE, bvp_features);                     features{5} = features_bvp;
+features_bvp = calc_features(fileDataCell{2}.amplitude, WINDOW_SIZE_BVP, bvp_features);                     features{5} = features_bvp;
 
-features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA, eda_features);                 features{6} = features_eda;
-features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA, eda_scl_features);                           features{7} = features_eda_scl;
-features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA, eda_scr_features);                           features{8} = features_eda_scr;
+features_eda = calc_features(fileDataCell{3}.amplitude, WINDOW_SIZE_EDA_TEMP, eda_features);                 features{6} = features_eda;
+features_eda_scl = calc_features(eda_scl, WINDOW_SIZE_EDA_TEMP, eda_scl_features);                           features{7} = features_eda_scl;
+features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA_TEMP, eda_scr_features);                           features{8} = features_eda_scr;
 
-features_hr = calc_features(fileDataCell{4}.amplitude, WINDOW_SIZE, hr_features);                       features{9} = features_hr;
+features_hr = calc_features(stage4HR_resampled, WINDOW_SIZE_HRV_resampled, hr_features);                       features{9} = features_hr;
 features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled); features{10} = features_hrv_frequency; 
-features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_features);                   features{11} = features_temp;
+features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE_EDA_TEMP, temp_features);                   features{11} = features_temp;
+
+%% Ensure features have the same length
+featureTable_toJoin = featureLenFixer(features,fileDataCell, winLenSec);
+
+
 
 %% Plot EDA signal
 
@@ -229,14 +232,13 @@ features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE, temp_featu
 
 %% Resample all features
 
-disp("Resampling of features")
-[featureTable_toJoin] = resampleAllFeatures(fileDataCell,features,n_features);
+% disp("Resampling of features")
+% [featureTable_toJoin] = resampleAllFeatures(fileDataCell,features,n_features);
 
 featureTable_toJoin.Properties.VariableNames = VariableNames;
 
 writetable(featureTable_toJoin,'tabledata.csv','writeMode',"append");
 
-<<<<<<< HEAD
 %% List of features we need to compute:
 
 % HRV
@@ -245,8 +247,9 @@ writetable(featureTable_toJoin,'tabledata.csv','writeMode',"append");
 
 
 end
+
 %%  Feature selection
-featuresColsOfInterest = 13:size(tabledata20210419TrainVal,2)-1;
+featuresColsOfInterest = 13:size(tabledata20210419TrainVal,2)-2;
 featuresToRemove = [13,14,15,16];
 for i = 1:length(featuresToRemove)
     featuresColsOfInterest = featuresColsOfInterest(featuresColsOfInterest~=featuresToRemove(i));
@@ -293,11 +296,8 @@ fprintf("TPR: %f %% \n", TPR*100)
 fprintf("TNR: %f %% \n", TNR*100)
 fprintf("\n")
 
-=======
-featureTable = [featureTable; featureTable_toJoin];
->>>>>>> parent of 98b6c7d (Revert "Merge remote-tracking branch 'origin/Daniel' into Daniel")
 
-end
+
 %%  Feature selection
 
 figure()
