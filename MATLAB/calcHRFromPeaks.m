@@ -22,6 +22,49 @@ ibiStage3 = diff(oneCycleHRV2_time); %ms
 ibiStage3_time = oneCycleHRV2_time(2:end);
 
 
+missingDataTimeThr = 60/20;
+boiStage4 = ibiStage3 >= seconds(missingDataTimeThr);
+
+
+boiStage4(1) = false;
+
+boiStage4_time_end = ibiStage3_time(boiStage4);
+boiStage4_time_start = ibiStage3_time([boiStage4(2:end);false]);
+
+
+motionErrorTimePairs = [boiStage4_time_start, boiStage4_time_end];
+
+oneCycleHRV_final = oneCycleHRV_secondStage_resampled;
+
+oneCycleHRV_final(oneCycleHRV_final>250) = 250;
+
+oneCycleHRV_final = movmean(oneCycleHRV_final,48);
+
+% Calculate HR
+stage4HR = seconds(60)./ibiStage3(~boiStage4); 
+stage4HR_time = ibiStage3_time(~boiStage4); 
+
+% Resample HR
+[stage4HR_resampled,stage4HR_time_resampled] = resample(stage4HR,stage4HR_time,rFs,1,1);
+
+stage4HR_resampled = movmean(stage4HR_resampled,48);
+
+
+
+% Set missing data to NaN in resampled HRV and HR
+for errorIdx = 1:size(motionErrorTimePairs,1)
+    oneCycleHRV_final(isbetween(oneCycleHRV2_time_resampled, motionErrorTimePairs(errorIdx,1) ,motionErrorTimePairs(errorIdx,2))) = NaN;
+    stage4HR_resampled(isbetween(stage4HR_time_resampled, motionErrorTimePairs(errorIdx,1) ,motionErrorTimePairs(errorIdx,2))) = NaN;
+end
+
+oneCycleHRV_fillgaps = fillgaps(oneCycleHRV_final,200,150);
+oneCycleHRV_fillgaps(oneCycleHRV_fillgaps>250) = 250;
+oneCycleHRV_fillgaps(oneCycleHRV_fillgaps<0) = 0;
+
+stage4HR_resampled_fillgaps = fillgaps(stage4HR_resampled,200,150);
+
+
+
 %% Plotting
 if plotBool(1)
     figure()
