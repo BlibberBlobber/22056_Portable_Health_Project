@@ -1,8 +1,5 @@
 package com.example.a22056_app.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,19 +8,16 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.a22056_app.Tools.Configuration;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.a22056_app.Tools.DatabaseHandler;
 import com.example.a22056_app.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.example.a22056_app.Tools.Configuration;
+import com.example.a22056_app.Tools.DataParser;
+import com.example.a22056_app.Tools.DatabaseHandler;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -41,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         headerTextView = findViewById(R.id.headerTextView);
 
         DataParser parser = new DataParser();
-        InputStream inputStream = getResources().openRawResource(R.raw.acc);
+        InputStream inputStream = getResources().openRawResource(R.raw.features);
         try {
             parser.getData(inputStream);
         } catch (IOException e) {

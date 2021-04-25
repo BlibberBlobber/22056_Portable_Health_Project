@@ -37,6 +37,7 @@ public class DataParser {
                 }
                 valueArray.add(vals);
                 counter ++;
+
             }
             Log.d("DATAREADER", "Size of data array " + valueArray.size());
             Log.d("DATAREADER", "Sample from arraylist " + valueArray.get(10)[0]);
