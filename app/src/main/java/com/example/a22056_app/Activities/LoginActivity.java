@@ -1,5 +1,6 @@
 package com.example.a22056_app.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -36,11 +38,19 @@ public class LoginActivity extends AppCompatActivity {
 
         DataParser parser = new DataParser();
         InputStream inputStream = getResources().openRawResource(R.raw.features);
+        ArrayList<double[]> valueList = null;
         try {
-            parser.getData(inputStream);
+            valueList = parser.getData(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+        String foldername = "Documents";
+        String filename = "FileTest";
+        String dataToStore = String.valueOf(valueList.get(10)[0]);
+        parser.savePrivately(dataToStore, this);
+
 
 
         if (system.equals("healthcare")){
