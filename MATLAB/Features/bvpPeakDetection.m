@@ -72,7 +72,7 @@ yf = [0; yf];
 %%
 
 N = length(pksmpd); % length of found peaks, that we need to control
-Sthreshold = 100;%mean(yf(1:2*fs));   % init of signal threshold
+Sthreshold = 50; %mean(yf(1:200*fs));   % init of signal threshold
 Nthreshold = 2*Sthreshold;  % init of Noise threshold
 
 Slevel = Sthreshold; % init signal level to signal threshold
@@ -228,9 +228,12 @@ test_index(1) = 25;
 % correct for misplaced peaks and skewedness
 for i=1:length(test_index)
    
+    if test_index(i)+15 > size(bvp,1); continue; end
     temp_list = [test_index(i)-15 : test_index(i)+15];
     
-    [val,in] = max(filtOut_BVP(temp_list));
+    
+    %[val,in] = max(filtOut_BVP(temp_list));
+    [val,in] = max(bvp(temp_list));
 
     check = in - 16;
     
@@ -262,8 +265,10 @@ if plotBool(2)
 
     ax2 = nexttile;
     hold on
-    plot(filtOut_BVP)
-    plot(peakIndex, filtOut_BVP(peakIndex),'o')
+    %plot(filtOut_BVP)
+    plot(bvp);
+    %plot(peakIndex, filtOut_BVP(peakIndex),'o')
+    plot(peakIndex, bvp(peakIndex),'o')
     hold off
     xlabel('Time [samples]')
     legend(["Filtered BVP","Detected peaks"])

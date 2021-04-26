@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+MATLAB/Features/bvpPeakDetection.asv
+*.asv

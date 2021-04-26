@@ -53,6 +53,9 @@ for i = 1:size(fileDataCell,1)
             
             data.Var1 = tt;
             data.Properties.VariableNames = {'time','amplitude'};
+        elseif isequal(modalityFieldNames(i),"tags")
+            % Nothing to see here
+            continue;
         else
             % Handle other modalities
             fs = data(2,1).Variables;
@@ -64,6 +67,7 @@ for i = 1:size(fileDataCell,1)
             %data = table(tt,data.Variables');
             data.time = tt';
             data.Properties.VariableNames = {'amplitude','time'};
+            
         end
     end
     
