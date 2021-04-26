@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -21,12 +23,18 @@ import com.empatica.empalink.delegate.EmpaStatusDelegate;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.PatientListAdapter;
 import com.example.a22056_app.R;
+import com.example.a22056_app.Tools.DataParser;
 import com.example.a22056_app.Tools.DatabaseHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.io.IOException;
+import java.io.InputStream;
+
 import java.util.ArrayList;
+import java.util.Timer;
 
 
 
@@ -36,8 +44,14 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private ListView listView;
     private Button addPatientButton;
     private PatientListAdapter listAdapter;
+    private ArrayList<double[]> firstPersonFeatures;
+    private ArrayList<double[]> secondPersonFeatures;
+    private ArrayList<Patient> patients = new ArrayList<>();
    // Toolbar toolbar;
     ProgressBar progressBar;
+    private int mInterval = 10000; // 10 sekunder
+    private Handler mHandler;
+    private int intervalCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +60,17 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
 
         deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
         deviceManager.authenticateWithAPIKey("81eb4118b7654dd68f7d47b280e7da2b");
+
+        DataParser parser = new DataParser();
+        InputStream firstInputStream = getResources().openRawResource(R.raw.featuresperson1);
+        InputStream secondInputStream = getResources().openRawResource(R.raw.featuresperson2);
+        try {
+            firstPersonFeatures = parser.getData(firstInputStream);
+            secondPersonFeatures = parser.getData(secondInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mHandler = new Handler();
 
        // toolbar = findViewById(R.id.toolbar);
        // setSupportActionBar(toolbar);
@@ -68,14 +93,56 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
                 if (!task.isSuccessful()){
                     Log.d("Firestore", "Error getting data " + task.getException().getMessage());
                 }else {
-                    ArrayList<Patient> patients = new ArrayList<>();
+                   // ArrayList<Patient> patients = new ArrayList<>();
                     for (QueryDocumentSnapshot document: task.getResult()){
                         Log.d("Firestore",document.getId() + " => " + document.getData());
                         Patient patient = new Patient(document.getData());
                         patients.add(patient);
                     }
                     setListAdapter(patients);
+                    startRepeatingTask();
+                    setOnItemClick();
                 }
+            }
+        });
+    }
+    Runnable mStatusChecker = new Runnable() {
+        @Override
+        public void run() {
+            try{
+
+            } finally {
+                mHandler.postDelayed(mStatusChecker, mInterval);
+                updateTable();
+                intervalCounter ++;
+            }
+        }
+    };
+    private void updateTable(){
+        listAdapter.setFirstPersonFeatures(firstPersonFeatures.get(intervalCounter));
+        listAdapter.setSecondPersonFeatures(secondPersonFeatures.get(intervalCounter));
+        listAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopRepeatingTask();
+    }
+    private void setOnItemClick(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Intent intent = new Intent(PatientListActivity.this, MeasurementsActivity.class);
+                Patient patient = patients.get(position);
+                intent.putExtra("name", patient.getUser().getFullName());
+                if (position == 0){
+                    intent.putExtra("features", firstPersonFeatures);
+                } else{
+                    intent.putExtra("features", secondPersonFeatures);
+                }
+                intent.putExtra("intervalcounter", intervalCounter);
+                startActivity(intent);
             }
         });
     }
@@ -85,9 +152,16 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
 
     private void setListAdapter(ArrayList<Patient> patients){
 
-        listAdapter = new PatientListAdapter(this, patients);
+        listAdapter = new PatientListAdapter(this, patients, firstPersonFeatures.get(1), secondPersonFeatures.get(1));
         listView.setAdapter(listAdapter);
 
+    }
+
+    private void startRepeatingTask(){
+        mStatusChecker.run();
+    }
+    private void stopRepeatingTask(){
+        mHandler.removeCallbacks(mStatusChecker);
     }
 
     @Override

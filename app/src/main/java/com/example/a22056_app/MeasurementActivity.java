@@ -16,13 +16,13 @@ import org.joda.time.DateTime;
 import java.time.LocalDate;
 import java.util.Date;
 
-public class MeasurementsActivity extends AppCompatActivity {
+public class MeasurementActivity extends AppCompatActivity {
     private MeasurementDataSeries measurementDataSeries;
     public GraphView graphView;
     //private LineGraphSeries<DataPoint> lineGraph = new LineGraphSeries<DataPoint>();
     //private Datapoint datapoint;
 
-    public MeasurementsActivity(){}
+    public MeasurementActivity(){}
 
     public void UpdateGraphviewWithData(){
       /*  graphView = (GraphView) findViewById(R.id.idGraphView);

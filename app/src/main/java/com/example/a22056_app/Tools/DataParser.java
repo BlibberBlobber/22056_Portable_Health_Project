@@ -29,8 +29,7 @@ public class DataParser {
 
     InputStream inputStream;
 
-    public  ArrayList<double[]> getData(InputStream inputStream) throws IOException { //not void ->>
-
+    public ArrayList<double[]> getData(InputStream inputStream) throws IOException { //not void -> ArrayList<[]double>
 
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -40,22 +39,27 @@ public class DataParser {
             ArrayList<double[]> valueArray = new ArrayList<>();
             int counter = 0;
             while ((nextLine = reader.readNext()) != null) {
-                double[] vals = new double[nextLine.length];
-                for (int i = 0; i < nextLine.length; i++){
-                    double dVal = Double.parseDouble(nextLine[i]);
-                    vals[i] = dVal;
+                if (counter != 0) {
+                    double[] vals = new double[nextLine.length];
+                    for (int i = 0; i < nextLine.length; i++) {
+                        if (i != 40) {
+                            double dVal = Double.parseDouble(nextLine[i]);
+                            vals[i] = dVal;
+                        }
+                    }
+                    valueArray.add(vals);
                 }
-                valueArray.add(vals);
                 counter ++;
 
             }
             Log.d("DATAREADER", "Size of data array " + valueArray.size());
             Log.d("DATAREADER", "Sample from arraylist " + valueArray.get(10)[0]);
 
-            return valueArray;
+            return  valueArray;
 
         } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
+            return null;
         }
 
         return null;

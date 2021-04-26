@@ -6,9 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.a22056_app.MeasurementDataSeries;
-import com.example.a22056_app.MeasurementsActivity;
+import com.example.a22056_app.MeasurementActivity;
 import com.example.a22056_app.R;
-import com.jjoe64.graphview.GraphView;
 
 public class GraphsActivity extends AppCompatActivity {
 
@@ -21,7 +20,6 @@ public class GraphsActivity extends AppCompatActivity {
 
         Log.i("GraphError","Main");
 
-        com.example.a22056_app.MeasurementsActivity test = new MeasurementsActivity();
         MeasurementDataSeries measurementDataSeries = new MeasurementDataSeries();
 
         try {
