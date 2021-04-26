@@ -17,34 +17,34 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/surgeryTextView"
+        android:id="@+id/temperatureTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:paddingStart="5dp"
-        android:text="Surgery"
+        android:text="Temperature"
         android:textAlignment="textStart"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/riskTextView"
+        android:id="@+id/hrTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:paddingStart="5dp"
-        android:text="Current risk assessment"
+        android:text="Heart Rate"
         android:textAlignment="textStart"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/hrvTextView"
+        android:id="@+id/stressTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:paddingStart="5dp"
-        android:text="Heart rate variability"
+        android:text="Stress"
         android:textAlignment="textStart"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
