@@ -20,6 +20,7 @@ import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
+import com.example.a22056_app.Models.DataPoint;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.PatientListAdapter;
 import com.example.a22056_app.R;
@@ -43,6 +44,12 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private PatientListAdapter listAdapter;
     private ArrayList<double[]> firstPersonFeatures;
     private ArrayList<double[]> secondPersonFeatures;
+    private ArrayList<DataPoint> hrFirstPerson;
+    private ArrayList<DataPoint> hrSecondPerson;
+    private ArrayList<DataPoint> hrvFirstPerson;
+    private ArrayList<DataPoint> hrvSecondPerson;
+    private ArrayList<DataPoint> tempFirstPerson;
+    private ArrayList<DataPoint> tempSecondPerson;
     private ArrayList<Patient> patients = new ArrayList<>();
    // Toolbar toolbar;
     ProgressBar progressBar;
@@ -59,12 +66,27 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         DataParser parser = new DataParser();
         InputStream firstInputStream = getResources().openRawResource(R.raw.featuresperson1);
         InputStream secondInputStream = getResources().openRawResource(R.raw.featuresperson2);
+        InputStream hrFirstPersonIS = getResources().openRawResource(R.raw.hr_person_1);
+        InputStream hrSecondPersonIS = getResources().openRawResource(R.raw.hr_person_2);
+        InputStream hrvFirstPersonIS = getResources().openRawResource(R.raw.hrv_person_1);
+        InputStream hrvSecondPersonIS = getResources().openRawResource(R.raw.hrv_person_2);
+        InputStream tempFirstPersonIS = getResources().openRawResource(R.raw.temp_person_1);
+        InputStream tempSecondPersonIS = getResources().openRawResource(R.raw.temp_person_1);
         try {
             firstPersonFeatures = parser.getData(firstInputStream);
             secondPersonFeatures = parser.getData(secondInputStream);
+            hrFirstPerson = parser.getMeasurements(hrFirstPersonIS);
+            hrSecondPerson = parser.getMeasurements(hrSecondPersonIS);
+            hrvFirstPerson = parser.getMeasurements(hrvFirstPersonIS);
+            hrvSecondPerson = parser.getMeasurements(hrvSecondPersonIS);
+            tempFirstPerson = parser.getMeasurements(tempFirstPersonIS);
+            tempSecondPerson = parser.getMeasurements(tempSecondPersonIS);
+
         } catch (IOException e) {
             e.printStackTrace();
+            Log.d("DHREADER","Error appeared while calling getMeasurements()");
         }
+
         mHandler = new Handler();
        // toolbar = findViewById(R.id.toolbar);
        // setSupportActionBar(toolbar);
@@ -112,8 +134,14 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         }
     };
     private void updateTable(){
-        listAdapter.setFirstPersonFeatures(firstPersonFeatures.get(intervalCounter));
-        listAdapter.setSecondPersonFeatures(secondPersonFeatures.get(intervalCounter));
+        //listAdapter.setFirstPersonFeatures(firstPersonFeatures.get(intervalCounter));
+        //listAdapter.setSecondPersonFeatures(secondPersonFeatures.get(intervalCounter));
+        listAdapter.setHrFirstPerson(hrFirstPerson.get(intervalCounter));
+        listAdapter.setHrSecondPerson(hrSecondPerson.get(intervalCounter));
+        listAdapter.setTempFirstPerson(tempFirstPerson.get(intervalCounter));
+        listAdapter.setTempSecondPerson(tempSecondPerson.get(intervalCounter));
+        listAdapter.setHrvFirstPerson(hrvFirstPerson.get(intervalCounter));
+        listAdapter.setHrSecondPerson(hrvSecondPerson.get(intervalCounter));
         listAdapter.notifyDataSetChanged();
     }
 
@@ -131,8 +159,14 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
                 intent.putExtra("name", patient.getUser().getFullName());
                 if (position == 0){
                     intent.putExtra("features", firstPersonFeatures);
+                    intent.putExtra("hrv", hrvFirstPerson);
+                    intent.putExtra("hr", hrFirstPerson);
+                    intent.putExtra("temp", tempFirstPerson);
                 } else{
                     intent.putExtra("features", secondPersonFeatures);
+                    intent.putExtra("hrv", hrvSecondPerson);
+                    intent.putExtra("hr", hrSecondPerson);
+                    intent.putExtra("temp", tempSecondPerson);
                 }
                 intent.putExtra("intervalcounter", intervalCounter);
                 startActivity(intent);
@@ -145,7 +179,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
 
     private void setListAdapter(ArrayList<Patient> patients){
 
-        listAdapter = new PatientListAdapter(this, patients, firstPersonFeatures.get(1), secondPersonFeatures.get(1));
+        listAdapter = new PatientListAdapter(this, patients, hrFirstPerson.get(0), hrSecondPerson.get(0), tempFirstPerson.get(0), tempSecondPerson.get(0), hrvFirstPerson.get(0), hrvSecondPerson.get(0));
         listView.setAdapter(listAdapter);
 
     }

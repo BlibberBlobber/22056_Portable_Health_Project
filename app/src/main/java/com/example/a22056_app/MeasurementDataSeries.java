@@ -14,7 +14,7 @@ public class MeasurementDataSeries {
     public MeasurementDataSeries(){}
 
     public void addDataPointToSeries(Date timestamp, double sample){
-        signal.appendData(new DataPoint(timestamp,sample),false,100000,true);
+                signal.appendData(new DataPoint(timestamp,sample),false,10000,true);
     }
 
     public LineGraphSeries<DataPoint> getData(){
