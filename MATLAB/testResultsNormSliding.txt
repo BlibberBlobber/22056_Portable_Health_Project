@@ -1,0 +1,126 @@
+
+Model: Fine Trees 
+Acc: 76.337060 % 
+TPR: 64.782827 % 
+TNR: 84.093212 % 
+F1: 0.647828 
+
+Model: Medium Trees 
+Acc: 79.098747 % 
+TPR: 70.005524 % 
+TNR: 84.344132 % 
+F1: 0.700055 
+
+Model: coarseTreeModel 
+Acc: 70.907989 % 
+TPR: 61.977472 % 
+TNR: 74.195927 % 
+F1: 0.619775 
+
+Model: linearDiscriminantModel 
+Acc: 83.248013 % 
+TPR: 68.375280 % 
+TNR: 98.801158 % 
+F1: 0.683753 
+
+Model: quadraticDiscriminantModel 
+Acc: 70.948404 % 
+TPR: 57.595835 % 
+TNR: 80.898084 % 
+F1: 0.575958 
+
+Model: logisticRegressionModel 
+Acc: 80.796174 % 
+TPR: 70.645326 % 
+TNR: 87.440098 % 
+F1: 0.706453 
+
+Model: gaussianNaiveBayesModel 
+Acc: 64.812071 % 
+TPR: 50.357536 % 
+TNR: 78.690256 % 
+F1: 0.503575 
+
+Model: fineGaussianSVMModel 
+Acc: 68.166509 % 
+TPR: 56.510417 % 
+TNR: 72.801732 % 
+F1: 0.565104 
+
+Model: mediumGaussianSVMModel 
+Acc: 76.599758 % 
+TPR: 67.468011 % 
+TNR: 81.461602 % 
+F1: 0.674680 
+
+Model: coarseGaussianSVMModel 
+Acc: 80.068705 % 
+TPR: 73.119138 % 
+TNR: 83.609558 % 
+F1: 0.731191 
+
+Model: fineKNNModel 
+Acc: 73.878486 % 
+TPR: 62.237395 % 
+TNR: 81.158310 % 
+F1: 0.622374 
+
+Model: mediumKNNModel 
+Acc: 73.534959 % 
+TPR: 61.822012 % 
+TNR: 80.828506 % 
+F1: 0.618220 
+
+Model: coarseKNNModel 
+Acc: 73.649468 % 
+TPR: 61.931421 % 
+TNR: 80.985761 % 
+F1: 0.619314 
+
+Model: cosineKNNModel 
+Acc: 70.638556 % 
+TPR: 58.682068 % 
+TNR: 77.239937 % 
+F1: 0.586821 
+
+Model: cubicKNNModel 
+Acc: 74.161390 % 
+TPR: 62.734347 % 
+TNR: 81.190165 % 
+F1: 0.627343 
+
+Model: weightedKNNModel 
+Acc: 73.460865 % 
+TPR: 61.698774 % 
+TNR: 80.812172 % 
+F1: 0.616988 
+
+Model: boostedTreesModel 
+Acc: 76.566078 % 
+TPR: 65.083096 % 
+TNR: 84.261447 % 
+F1: 0.650831 
+
+Model: baggedTreesModel 
+Acc: 68.765998 % 
+TPR: 55.260991 % 
+TNR: 78.114670 % 
+F1: 0.552610 
+
+Model: subspaceDiscriminantModel 
+Acc: 80.870268 % 
+TPR: 68.971963 % 
+TNR: 89.935913 % 
+F1: 0.689720 
+
+Model: subspaceKNNModel 
+Acc: 75.737572 % 
+TPR: 67.591425 % 
+TNR: 79.579699 % 
+F1: 0.675914 
+
+Model: RUSBoostedTreesModel 
+Acc: 79.644349 % 
+TPR: 70.641026 % 
+TNR: 84.881739 % 
+F1: 0.706410 
