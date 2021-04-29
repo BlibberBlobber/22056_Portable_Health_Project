@@ -10,10 +10,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.a22056_app.Models.Patient;
+import com.example.a22056_app.Tools.Notification;
 
 import java.util.ArrayList;
 
 public class PatientListAdapter extends BaseAdapter {
+    Notification notification = new Notification();
     private Context context;
     private ArrayList<Patient> patients = new ArrayList<>();
     private LayoutInflater layoutInflater;
@@ -80,11 +82,16 @@ public class PatientListAdapter extends BaseAdapter {
         } else {
             stressTextView.setText("Stressed");
             stressTextView.setTextColor(Color.RED);
+            doNotification(nameTextView.getText().toString());
         }
 
 
         nameTextView.setText(patients.get(position).getUser().getFullName());
         return convertView;
+    }
+
+    private void doNotification(String nameText) {
+        notification.addNotification(context, nameText);
     }
 
 }
