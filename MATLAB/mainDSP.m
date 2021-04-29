@@ -12,6 +12,8 @@ addpath(genpath(fullfile(root,'Features')))
 addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
 
+%%
+testBool = true;
 
 
 VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
@@ -26,13 +28,22 @@ VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
     'hrv_features_resampled_HRV_freq' 'hrv_features_resampled_HRV_vlf' 'hrv_features_resampled_HRV_lf' 'hrv_features_resampled_HRV_hf'...
     'hrv_features_resampled_HRV_ratio' 'hrv_features_resampled_HRV_hf_norm' 'hrv_features_resampled_HRV_lf_norm'...
     'temp_features_mean' 'temp_features_std' 'temp_features_min' 'temp_features_max' 'temp_features_dynamic_range'...
-    'stress','time'};
+    'stress'};%,'time'};
 
-featureTable = array2table(nan(1,41),'VariableNames',VariableNames);
+featureTable = array2table(nan(1,40),'VariableNames',VariableNames);
 
-dataFolderList=dir("Test\Data");
-% dataFolderList=dir("Data");
-parfor participantIndex = 3:length(dataFolderList)
+format longG; 
+if testBool
+    dataFolderList=dir("Test\Data");
+    fileName = join(["tabledata",strrep(string(now),'.','-'),'Test','.csv'],'');
+else
+    dataFolderList=dir("Data");
+    fileName = join(["tabledata",strrep(string(now),'.','-'),'TrainVal','.csv'],'');
+end
+
+
+
+for participantIndex = 3:3%length(dataFolderList)
   
     disp(join(["Data set ", string(participantIndex-2), " out of ", string(length(dataFolderList)-2)],""))
     disp("Loading Data")
@@ -40,10 +51,19 @@ parfor participantIndex = 3:length(dataFolderList)
 
 
 if ispc()
-    dataFolderPath = pwd + "\Test\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    if testBool
+        dataFolderPath = pwd + "\Test\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    else
+        dataFolderPath = pwd + "\Data\" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    end
+    
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 elseif ismac()
-    dataFolderPath = pwd + "/Test/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    if testBool
+        dataFolderPath = pwd + "/Test/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    else
+        dataFolderPath = pwd + "/Data/" + dataFolderList(participantIndex).name; % The number should be 3:end and notes the folders containing data
+    end
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(dataFolderPath); % Optional input of folder path
 else
     [fileDataCell, modalityFieldNames, fs] = readAllCsvFromFolder(); % Optional input of folder path
@@ -56,8 +76,14 @@ fileDataCell = removeSignalStartPart(removeSecs,fileDataCell);
 
 %% Get the segmentation data from quest files
 disp("Importing and implemnting data segment results")
-segmentFolderList=dir("Segment_Info");
-segmentFolderPath = pwd + "\Segment_Info\" + segmentFolderList(participantIndex).name;
+if testBool
+    segmentFolderList=dir("Test\Segment_Info");
+    segmentFolderPath = pwd + "\Test\Segment_Info\" + segmentFolderList(participantIndex).name;
+else
+    segmentFolderList=dir("Segment_Info");
+    segmentFolderPath = pwd + "\Segment_Info\" + segmentFolderList(participantIndex).name;
+end
+
 
 table = importSegmentInfo(segmentFolderPath, [2 4]);
 % Get Order of protocol and start and end times
@@ -65,11 +91,12 @@ ORDER = table(1,2:6);
 START = str2double(table(2,2:6));
 END = str2double(table(3,2:6));
 
-segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
+% segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
 
-[fileDataCell] = segmentDataFromProtocol(fileDataCell, START, END, ORDER, fs);
+[fileDataCell, classes] = segmentDataFromProtocol(fileDataCell, START, END, ORDER);
 
 %% Plot E4 data
+
 
 % figure; hold on; grid on;
 % % Plot Accelerometer
@@ -177,8 +204,8 @@ disp("Creating features")
 n_features = 11;
 features = cell(1,n_features);
 
-% Define length of sliding window
-winLenSec = 10;
+% Define length of sliding window - Smallest is 1 second
+winLenSec = 60;
 WINDOW_SIZE_ACC = winLenSec*32;
 WINDOW_SIZE_BVP = winLenSec*64;
 WINDOW_SIZE_EDA_TEMP = winLenSec*4;
@@ -214,6 +241,7 @@ features_eda_scr = calc_features(eda_scr, WINDOW_SIZE_EDA_TEMP, eda_scr_features
 
 features_hr = calc_features(stage4HR_resampled, WINDOW_SIZE_HRV_resampled, hr_features);                       features{9} = features_hr;
 features_hrv_frequency = calc_features(oneCycleHRV, WINDOW_SIZE_HRV_resampled, hrv_features_resampled); features{10} = features_hrv_frequency; 
+
 features_temp = calc_features(fileDataCell{6}.amplitude, WINDOW_SIZE_EDA_TEMP, temp_features);                   features{11} = features_temp;
 
 %% Ensure features have the same length
@@ -237,7 +265,7 @@ featureTable_toJoin = featureLenFixer(features,fileDataCell, winLenSec);
 
 featureTable_toJoin.Properties.VariableNames = VariableNames;
 
-writetable(featureTable_toJoin,'tabledata.csv','writeMode',"append");
+writetable(featureTable_toJoin,fileName,'writeMode',"append");
 
 %% List of features we need to compute:
 
@@ -249,34 +277,62 @@ writetable(featureTable_toJoin,'tabledata.csv','writeMode',"append");
 end
 
 %%  Feature selection
-featuresColsOfInterest = 13:size(tabledata20210419TrainVal,2)-2;
-featuresToRemove = [13,14,15,16];
+tabledata = readtable('tabledata738275-0165TrainVal.csv');
+featuresColsOfInterest = 13:size(tabledata,2)-1;
+featuresToRemove = [13,14,15,16,22];
 for i = 1:length(featuresToRemove)
     featuresColsOfInterest = featuresColsOfInterest(featuresColsOfInterest~=featuresToRemove(i));
 end
 
-[idx,scores] = fscmrmr(tabledata20210419TrainVal(:,featuresColsOfInterest),tabledata20210419TrainVal(:,end));
+[idx,scores] = fscmrmr(tabledata(:,featuresColsOfInterest),tabledata(:,end));
 figure()
 bar(scores(idx),0.4,'FaceColor',[0.7,0.7,0.7])
 set(gca, 'XTick', 1:length(featuresColsOfInterest))
+xticks = {'max_{EDA}','\sigma_{TEMP}','\mu_{HR}','\mu_{SCL}','min_{TEMP}'...
+    ,'\sigma_{SCL}','min_{EDA}','NP_{SCR}','f_{HRV}^{LF}','max_{TEMP}'...
+    ,'range_{TEMP}','f_{HRV}^{LF/HF}','range_{EDA}','HF_{norm}'...
+    ,'\mu_{TEMP}','LF_{norm}','\sigma_{SCR}','NSP_{SCR}','f_{HRV}^{HF}'...
+    ,'\Sigma_x^f','\sigma_{HR}','f_{HRV}^{ULF}'};
 
-xticks = {'\mu_{SCL}','LF_{norm}','NSP_{SCR}','\sigma_{HR}','range_{TEMP}',...
-    '\sigma_{SCL}','f_{HRV}^{LF/HF}','\mu_{TEMP}','\mu_{HR}','f_{HRV}^{LF}',...
-    'min_{TEMP}','\sigma_{TEMP}','NP_{SCR}','max_{TEMP}','max_{EDA}',...
-    'range_{EDA}','\sigma_{SCR}','f_{HRV}^{ULF}','min_{EDA}','f_{HRV}^{HF}',...
-    '\Sigma_x^f','HF_{norm}'};
-set(gca,'XTickLabel',xticks);%strrep({tabledata20210419TrainVal(:,featuresColsOfInterest).Properties.VariableNames{idx}},'_','-'));
+
+colNamOfInt = {tabledata(:,featuresColsOfInterest).Properties.VariableNames{idx}};
+
+set(gca,'XTickLabel',xticks);%strrep(colNamOfInt,'_','-'));
 xtickangle(90)
 
 xlabel('Features')
 ylabel('Predictor importance score')
 
+colNamOfInt = string(colNamOfInt);
+
+
+%% Train
+disp("Allocating variables")
+trainFeat = [37, 24, 17, 20, 34];
+% trainingDataGPU = gpuArray(table2array(tabledata(:,trainFeat)));
+% labelData = gpuArray(table2array(tabledata(:,40)));
+trainingData = table2array(tabledata(:,colNamOfInt(1:5)))';
+labelData = table2array(tabledata(:,40))';
+% disp("Training - Started")
+% % SVMModel = fitcsvm(trainingDataGPU,labelData,'KernelScale','auto','Standardize',true,...
+% %     'KernelFunction','gaussian');
+% net = feedforwardnet(10);
+% net.numInputs = length(trainFeat);
+% net = configure(net,trainingData);
+% ANNClassifier = train(net,trainingData,labelData,'useGPU','yes');
+% disp("Training - Finished")
+
+%% Test
+tableTestdata = readtable('tabledata738275-0229Test.csv');
+testData = table2array(tableTestdata(:,colNamOfInt(1:5)))';
+labelTestData = table2array(tableTestdata(:,40))';
 
 %% Run models
-T = readtable('tabledata20210419Test.csv');
+T = readtable('tabledata738275-0229Test.csv');
+% load('Models\weightedKNN.mat')
 
-yfit = MediumGaussian.predictFcn(T);
-model = "MediumGaussian";
+yfit = coarseGaussianSVMModel.predictFcn(T);
+model = "Coarse Gaussian SVM";
 
 correct = sum(yfit == T.stress);
 Positive = sum(yfit);
@@ -289,22 +345,51 @@ FalsePositive = sum((abs(yfit)).*abs((T.stress-1)));
 Accuracy = (TruePositive + TrueNegative)/(Positive+Negative); % correct/length(yfit);
 TPR = TruePositive/Positive;
 TNR = TrueNegative/Negative;
+Precision = TruePositive / (TruePositive + FalsePositive);
+
+F1 = 2 / (1 / Precision + 1 / TPR);
+
 
 fprintf("Model: %s \n", model)
 fprintf("Acc: %f %% \n", Accuracy*100)
 fprintf("TPR: %f %% \n", TPR*100)
 fprintf("TNR: %f %% \n", TNR*100)
+fprintf("F1: %f \n", F1)
+
 fprintf("\n")
+
+% figure()
+% hold on
+% plot(T.stress.*1.5)
+% plot(yfit,'.')
+% hold off
+% legend(["Test data","Prediction"])
+% title(model)
+
+stressAreas = [find(diff(T.stress)~=0);length(T.stress)]./4;
+figure()
+subplot(1,2,1)
+hold on
+area([stressAreas(1)/60,stressAreas(2)/60],[3,3],'FaceColor',[0.7,0.7,0.7])
+plot([0.25/60:0.25/60:stressAreas(2)/60],yfit(1:(stressAreas(2)*4))+1,'.')
+xlabel("Time [minutes]")
+hold off
+subplot(1,2,2)
+hold on
+area([(stressAreas(3)-stressAreas(2))/60,(stressAreas(4)-stressAreas(2))/60],[3,3],'FaceColor',[0.7,0.7,0.7])
+plot([0.25/60:0.25/60:(stressAreas(4)-stressAreas(2))/60],yfit(stressAreas(2)*4+1:(stressAreas(4)*4))+1,'.')
+xlabel("Time [minutes]")
+hold off
 
 
 
 %%  Feature selection
 
-figure()
-bar(scores(idx))
-set(gca, 'XTick', 1:size(featureTable,2)-1)
-set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
-xtickangle(90)
-xlabel('Predictor rank')
-ylabel('Predictor importance score')
+% figure()
+% bar(scores(idx))
+% set(gca, 'XTick', 1:size(featureTable,2)-1)
+% set(gca,'XTickLabel',strrep({featureTable.Properties.VariableNames{idx}},'_','-'));
+% xtickangle(90)
+% xlabel('Predictor rank')
+% ylabel('Predictor importance score')
 
