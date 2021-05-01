@@ -1,5 +1,9 @@
 package com.example.a22056_app.Tools;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+
 import static java.lang.Math.round;
 
 public class LogisticRegression {
@@ -16,16 +20,16 @@ public class LogisticRegression {
 
     }
 
-    public int[] predict(double[][] data){
+    public int[] predict(ArrayList<double[]> data){
 
-        int M = data[0].length;
-        int N = data.length;
+        int M = data.get(0).length;
+        int N = data.size();
         int[] result = new int[N];
 
         for (int i = 0 ; i<N; i++) {
 
-            result[i] = predict(new double[]{data[i][0],data[i][1],data[i][2],data[i][3],data[i][4]});
-
+            result[i] = predict(new double[]{data.get(i)[17],data.get(i)[19],data.get(i)[25],data.get(i)[35],data.get(i)[37]});
+            //Log.i("LinearRegression", String.valueOf(result[i]));
         }
 
         return result;

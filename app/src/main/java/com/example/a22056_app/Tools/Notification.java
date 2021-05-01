@@ -55,8 +55,8 @@ public class Notification extends AppCompatActivity {
     private void createNotificationChannel(Context context) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.channel_1_name);
-            String description = context.getString(R.string.channel_1_description);
+            CharSequence name = CHANNEL_NAME; // context.getString(R.string.channel_1_name)
+            String description = CHANNEL_NAME; // context.getString(R.string.channel_1_description)
 
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
 

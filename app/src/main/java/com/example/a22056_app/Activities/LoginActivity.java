@@ -1,6 +1,5 @@
 package com.example.a22056_app.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,11 +14,18 @@ import com.example.a22056_app.R;
 import com.example.a22056_app.Tools.Configuration;
 import com.example.a22056_app.Tools.DataParser;
 import com.example.a22056_app.Tools.DatabaseHandler;
+import com.example.a22056_app.Tools.LogisticRegression;
 import com.google.firebase.auth.FirebaseUser;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         headerTextView = findViewById(R.id.headerTextView);
 
         DataParser parser = new DataParser();
-        InputStream inputStream = getResources().openRawResource(R.raw.features);
+        InputStream inputStream = getResources().openRawResource(R.raw.featuredata_tp2_s6);
         ArrayList<double[]> valueList = null;
         try {
             valueList = parser.getData(inputStream);
@@ -46,10 +52,22 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
-        String foldername = "Documents";
-        String filename = "FileTest";
-        String dataToStore = String.valueOf(valueList.get(10)[0]);
-        parser.savePrivately(dataToStore, this);
+        // Test to use the LinearRegression with the exported coefficients from MATLAB on the whole set for S6
+        double intercept = -1.57844843892432;
+        double eda_features_max =-1.57432446249465;
+        double eda_scl_features_mean = -0.615271239848967;
+        double hr_features_mean = -0.868413788939345;
+        double temp_features_std = -0.751876628298134;
+        double temp_features_max = 1.81182633691859;
+        double[][] featureTest = valueList.toArray(new double[valueList.get(0).length][valueList.size()]);
+        double[] coefficients = {intercept,eda_features_max,eda_scl_features_mean,hr_features_mean,temp_features_std,temp_features_max};
+        LogisticRegression predictor = new LogisticRegression(coefficients);
+        int[] prediction = predictor.predict(valueList);
+
+        //String foldername = "Documents";
+        //String filename = "FileTest";
+        //String dataToStore = String.valueOf(valueList.get(10)[0]);
+        //parser.savePrivately(dataToStore, this);
 
 
 
