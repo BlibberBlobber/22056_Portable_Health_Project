@@ -13,7 +13,7 @@ addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
 
 %%
-testBool = true;
+testBool = false;
 
 
 VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
@@ -41,9 +41,9 @@ else
     fileName = join(["tabledata",strrep(string(now),'.','-'),'TrainVal','.csv'],'');
 end
 
+participantIndex = 3;
 
-
-for participantIndex = 3:3%length(dataFolderList)
+% for participantIndex = 3:length(dataFolderList)
   
     disp(join(["Data set ", string(participantIndex-2), " out of ", string(length(dataFolderList)-2)],""))
     disp("Loading Data")
@@ -96,44 +96,52 @@ END = str2double(table(3,2:6));
 [fileDataCell, classes] = segmentDataFromProtocol(fileDataCell, START, END, ORDER);
 
 %% Plot E4 data
+if false
+    minMax = [min(min(table2array(fileDataCell{1,1}(:,1:3)))), max(max(table2array(fileDataCell{1,1}(:,1:3))))];
+    initTime = fileDataCell{1,1}.time(1);
+    set(0,'defaultTextInterpreter','latex');
 
+    figure()
+    tiledlayout(2,2)
+    ax1 = nexttile;
+    hold on; grid on
+    stressPhasePlot(initTime,minMax,ORDER,START,END,false)
+    p = plot(fileDataCell{1,1}.time,table2array(fileDataCell{1,1}(:,1:3)));
+    hold off
+    legend(p,["x", "y", "z"])
+    title("3-axis accelerometer")
+    ylabel("Acceleration [$64^{-1}g$]")
 
-% figure; hold on; grid on;
-% % Plot Accelerometer
-%     subplot(2,3,1)
-%     plot(fileDataCell{1}.time, fileDataCell{1}.x); hold on;
-%     plot(fileDataCell{1}.time, fileDataCell{1}.y); hold on;
-%     plot(fileDataCell{1}.time, fileDataCell{1}.z); hold on;
-%     title("Accelerometer"); xlabel("Time"); ylabel("Amplitude");
-%     
-% for j = 2:6 % modalities
-%     for l = 1:5 
-%         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-%         xline(fileDataCell{1}.time(1) + minutes(START(l)),'color','black')
-%         xline(fileDataCell{1}.time(1) + minutes(END(l)),'color','red')
-%     end
-%     
-%     % Plot everything else
-%     subplot(2,3,j)
-%     plot(fileDataCell{j}.time, fileDataCell{j}.amplitude)
-%     title(modalityFieldNames(j)); xlabel("Time"); ylabel("Amplitude");
-%     
-%     
-%     xline(fileDataCell{j}.time(1) + minutes(START(ORDER=="TSST")),'color','black')
-%     xline(fileDataCell{j}.time(1) + minutes(END(ORDER=="TSST")),'color','red')
-%     
-%     %for l = 1:5 
-%         %rectangle('Position',[datestr(fileDataCell{j}.time(1) + minutes(START(l))) -1000 datestr(fileDataCell{j}.time(1) + minutes(END(l))) 1000],'FaceColor',[0 .5 .5])
-%         %xline(fileDataCell{j}.time(1) + minutes(START(l)),'color','black')
-%         %xline(fileDataCell{j}.time(1) + minutes(END(l)),'color','red')
-%     %end
-%     
-%     %area([fileDataCell{j}.time(1) + minutes(START(l)),fileDataCell{j}.time(1) ...
-%     %    + minutes(END(l))],[100,100],'facecolor',[.8,1,.8], ...
-%     %'facealpha',.5,'edgecolor','none', 'basevalue',-.2);
-%     
-% end
-% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]); % Create full size figure
+    ax2 = nexttile;
+    minMax = [min(fileDataCell{2,1}.amplitude), max(fileDataCell{2,1}.amplitude)];
+    hold on; grid on
+    stressPhasePlot(initTime,minMax,ORDER,START,END,false)
+    plot(fileDataCell{2,1}.time,fileDataCell{2,1}.amplitude)
+    hold off
+    title("Photoplethysmography - PPG/BVP")
+
+    ax3 = nexttile;
+    minMax = [min(fileDataCell{3,1}.amplitude), max(fileDataCell{3,1}.amplitude)];
+    hold on; grid on
+    stressPhasePlot(initTime,minMax,ORDER,START,END,false)
+    plot(fileDataCell{3,1}.time,fileDataCell{3,1}.amplitude)
+    hold off
+    legend(ORDER)
+    title("Electrodermal activity - EDA")
+    ylabel("Electric conductance [$\mu S$]")
+
+    ax4 = nexttile;
+    minMax = [min(fileDataCell{6,1}.amplitude), max(fileDataCell{6,1}.amplitude)];
+    hold on; grid on
+    stressPhasePlot(initTime,minMax,ORDER,START,END,false)
+    plot(fileDataCell{6,1}.time,fileDataCell{6,1}.amplitude)
+    hold off
+    title("Dermal temperature")
+    ylabel("Temperatur [$^{\circ}C$]")
+
+    linkaxes([ax1 ax2 ax3 ax4],'x')
+
+end
 
 %% Noise removal strategy 4
 disp("Removing noise from BVP data")
@@ -142,29 +150,30 @@ tempBVP = fileDataCell{2}.amplitude;
 [fileDataCell{2}.amplitude, smoothedBvpEnvelope] = bvpMotionArtifactRemoval(threshBVPEnv,fileDataCell{2}.amplitude,sampleMean);
 
 %% Plot of motion artifact removal
-% figure()
-% tiledlayout(2,1)
-% ax1 = nexttile;
-% hold on; 
-% plot(tempBVP);
-% plot(smoothedBvpEnvelope,'--');
-% yline(threshBVPEnv,'-.r')
-% hold off
-% grid on
-% title("Blood volume pulse - Unfiltered")
-% legend(["BVP","Smoothed Envelope","Filter threshold"])
-% 
-% ax2 = nexttile;
-% hold on; 
-% plot(fileDataCell{2}.amplitude);
-% hold off
-% grid on
-% 
-% title("Blood volume pulse - Motion artifacts removed")
-% legend(["BVP"])
-% 
-% 
-% linkaxes([ax1 ax2],'x')
+if false
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    hold on; 
+    plot(fileDataCell{2}.time,tempBVP);
+    plot(fileDataCell{2}.time,smoothedBvpEnvelope,'--');
+    yline(threshBVPEnv,'-.r')
+    hold off
+    grid on
+    title("Blood volume pulse - Unfiltered")
+    legend(["BVP","Smoothed Envelope","Filter threshold"])
+
+    ax2 = nexttile;
+    hold on; 
+    plot(fileDataCell{2}.time,fileDataCell{2}.amplitude);
+    hold off
+    grid on
+
+    title("Blood volume pulse - Motion artifacts removed")
+    legend(["BVP"])
+
+    linkaxes([ax1 ax2],'x')
+end
 
 %% Calculate HR from BVP
 disp("Calculating HR and HRV")
@@ -174,23 +183,34 @@ thrHRV = 250;
 [oneCycleHRV, oneCycleHRV_time, motionErrorTimePairs, ...
     stage4HR_resampled, stage4HR_time_resampled] = ...
     calcHRFromPeaks(peakIndex,fileDataCell{2}.time(peakIndex), ...
-    64, thrHRV, [false, false]);
+    64, thrHRV, [false, false, false]);
 
 
 %% Compare HR with Empatica HR
-% figure()
-% tiledlayout(2,1)
-% ax1 = nexttile;
-% plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
-% ylabel("HR [BPM]")
-% title("Empatica HR")
-% 
-% ax2 = nexttile;
-% plot(stage4HR_time_resampled, stage4HR_resampled)
-% ylabel("HR [BPM]")
-% title("HR repaired")
-% 
-% linkaxes([ax1 ax2],'x')
+figure()
+tiledlayout(3,1)
+ax1 = nexttile;
+plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+ylabel("HR [BPM]")
+title("Empatica HR")
+
+ax2 = nexttile;
+hold on
+plot(stage4HR_time_resampled, movmean(stage4HR_resampled,1))
+hold off
+ylabel("HR [BPM]")
+title("HR repaired")
+
+ax3 = nexttile;
+hold on
+plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+plot(stage4HR_time_resampled, movmean(stage4HR_resampled,750))
+hold off
+ylabel("HR [BPM]")
+title("Compare")
+legend(["Empatica HR", "HR repaired MA(750)"])
+
+linkaxes([ax1 ax2 ax3],'x')
 
 
 %% Compute SCL and SCR from EDA
@@ -274,7 +294,7 @@ writetable(featureTable_toJoin,fileName,'writeMode',"append");
 
 
 
-end
+% end
 
 %%  Feature selection
 tabledata = readtable('tabledata738275-0165TrainVal.csv');
@@ -331,8 +351,8 @@ labelTestData = table2array(tableTestdata(:,40))';
 T = readtable('tabledata738275-0229Test.csv');
 % load('Models\weightedKNN.mat')
 
-yfit = coarseGaussianSVMModel.predictFcn(T);
-model = "Coarse Gaussian SVM";
+yfit = logisticRegressionModel.predictFcn(T);
+model = "logisticRegressionModel";
 
 correct = sum(yfit == T.stress);
 Positive = sum(yfit);

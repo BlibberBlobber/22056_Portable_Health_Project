@@ -150,6 +150,38 @@ if plotBool(2)
     linkaxes([ax1 ax2],'x')
 end
 
+if plotBool(3)
+    minMax = [min(oneCycleHRV_fillgaps),max(oneCycleHRV_fillgaps)];
+    figure()
+    tiledlayout(2,1)
+    ax1 = nexttile;
+    hold on
+    for idx = 1:length(boiStage4_time_start)
+        area([boiStage4_time_start(idx),boiStage4_time_end(idx)],...
+                [minMax(2)*1.1,minMax(2)*1.1],...
+                minMax(1)*0.9, 'FaceAlpha',0.3,'EdgeColor', 'none','FaceColor',[0.8500, 0.3250, 0.0980])
+    end
+    plot(oneCycleHRV2_time_resampled, oneCycleHRV_final)
+    hold off
+    ylabel("HRV [ms]")
+    title("HRV ")
+    
+    
+    ax2 = nexttile;
+    hold on
+    for idx = 1:length(boiStage4_time_start)
+        area([boiStage4_time_start(idx),boiStage4_time_end(idx)],...
+                [minMax(2)*1.1,minMax(2)*1.1],...
+                minMax(1)*0.9, 'FaceAlpha',0.3,'EdgeColor', 'none','FaceColor',[0.8500, 0.3250, 0.0980])
+    end
+    plot(oneCycleHRV2_time_resampled, oneCycleHRV_fillgaps)
+    hold off
+    ylabel("HRV [ms]")
+    title("HRV repaired")
+    
+    linkaxes([ax1 ax2],'xy')
+end
+
 
 
 

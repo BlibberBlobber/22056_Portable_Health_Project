@@ -24,7 +24,7 @@ xlimits = [2.9*10^4, 3*10^4];
 
 if plotBool(1)
     figure()
-    tiledlayout(3,2)
+    tiledlayout(5,1)
     ax1 = nexttile;
     plot(bvp)
     ylabel('BVP')
@@ -46,7 +46,9 @@ if plotBool(1)
     plot(yf)
     ylabel('Integration')
     
+    
     linkaxes([ax1 ax2 ax3 ax4 ax5],'x')
+    
 end
 
 
