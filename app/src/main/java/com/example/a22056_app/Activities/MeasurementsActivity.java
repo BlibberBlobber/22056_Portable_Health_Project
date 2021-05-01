@@ -8,10 +8,10 @@ import android.os.Handler;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.a22056_app.Models.DataPoint;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.R;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
@@ -24,7 +24,10 @@ public class MeasurementsActivity extends AppCompatActivity {
     String patientName;
     Patient patient;
     ArrayList<double[]> patientFeatures;
-    private LineGraphSeries<DataPoint> signal = new LineGraphSeries<DataPoint>();
+    ArrayList<DataPoint> hrArrayList;
+    ArrayList<DataPoint> hrvArrayList;
+    ArrayList<DataPoint> tempArrayList;
+  //  private LineGraphSeries<DataPoint> signal = new LineGraphSeries<DataPoint>();
     TextView nameTextView;
     TextView stressTextView;
     TextView hrTextView;
@@ -43,6 +46,9 @@ public class MeasurementsActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         patientName = extras.get("name").toString();
         patientFeatures = (ArrayList<double[]>) extras.get("features");
+        hrArrayList = (ArrayList<DataPoint>) extras.getSerializable("hr");
+        hrvArrayList = (ArrayList<DataPoint>) extras.getSerializable("hrv");
+        tempArrayList = (ArrayList<DataPoint>) extras.getSerializable("temp");
         intervalCounter = extras.getInt("intervalcounter");
         nameTextView.setText("Patient name: " + patientName);
         mHandler = new Handler();
@@ -62,7 +68,7 @@ public class MeasurementsActivity extends AppCompatActivity {
         }
     };
     private void updateValues(){
-        double[] currentFeatures = patientFeatures.get(intervalCounter);
+       /* double[] currentFeatures = patientFeatures.get(intervalCounter);
         String hr = String.valueOf((int) Math.round(currentFeatures[25]));
         String temp = String.valueOf((int) Math.round(currentFeatures[34]));
         hrTextView.setText("Heart rate: " + hr);
@@ -77,7 +83,13 @@ public class MeasurementsActivity extends AppCompatActivity {
         signal.appendData(new DataPoint(intervalCounter, currentFeatures[25]), false, 100000, true);
         graphView.addSeries(signal);
         graphView.getViewport().setScalable(true);
-        graphView.getViewport().setScrollable(true);
+        graphView.getViewport().setScrollable(true); */
+        DataPoint hrDataPoint = hrArrayList.get(intervalCounter);
+        DataPoint hrvDataPoint = hrvArrayList.get(intervalCounter);
+        DataPoint tempDataPoint = tempArrayList.get(intervalCounter);
+        hrTextView.setText("Heart rate: " + Math.round(hrDataPoint.getValue()));
+        stressTextView.setText("HRV: " + Math.round(hrvDataPoint.getValue()));
+        tempTextView.setText("Temperature: " + Math.round(tempDataPoint.getValue()));
 
     }
     private void startRepeatingTask(){

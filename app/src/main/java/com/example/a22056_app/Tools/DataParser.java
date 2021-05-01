@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.a22056_app.Models.DataPoint;
 import com.example.a22056_app.R;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -67,16 +68,12 @@ public class DataParser {
 
     public void savePrivately(String dataToStore, Context context) {
 
-        // Creating folder with name GeekForGeeks
         File folder = context.getExternalFilesDir("Features");
-
-        // Creating file with name gfg.txt
         File file = new File(folder, "Feature_person1");
         Log.d("DATAREADER", "Trying to write to Documents");
         writeTextData(file, dataToStore);
 
     }
-
 
     private void writeTextData(File file, String data) {
         FileOutputStream fileOutputStream = null;
@@ -99,6 +96,36 @@ public class DataParser {
         }
     }
     
-    
-    
+    public ArrayList<DataPoint> getMeasurements(InputStream inputStream) throws  IOException{
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            CSVReader reader = new CSVReader(inputStreamReader);
+            reader.getLinesRead();
+            String[] nextLine;
+            ArrayList<DataPoint> valueArray = new ArrayList<>();
+            int counter = 0;
+            while ((nextLine = reader.readNext()) != null) {
+                String date = "";
+                double value = 0;
+                for (int i = 0; i < nextLine.length; i++) {
+                    if (i == 0) {
+                        value = Double.parseDouble(nextLine[i]);
+                    } else {
+                        date = nextLine[i];
+                    }
+                }
+                DataPoint dataPoint = new DataPoint(date, value);
+                valueArray.add(dataPoint);
+                counter ++;
+            }
+            Log.d("DATAREADER", "Size of data array in get measurements " + valueArray.size());
+            Log.d("DATAREADER", "Sample value from arraylist in measurements" + valueArray.get(10).getValue());
+            Log.d("DATAREADER", "Sample date from arraylist in measurements" + valueArray.get(10).getDate());
+
+            return  valueArray;
+        } catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
