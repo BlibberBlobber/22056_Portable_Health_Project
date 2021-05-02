@@ -13,7 +13,7 @@ addpath(genpath(fullfile(root,'Segment_Info')))
 clear root
 
 %%
-testBool = false;
+testBool = true;
 
 
 VariableNames = {'acc_x_mean' 'acc_x_std' 'acc_x_absint' ...
@@ -41,7 +41,7 @@ else
     fileName = join(["tabledata",strrep(string(now),'.','-'),'TrainVal','.csv'],'');
 end
 
-participantIndex = 3;
+participantIndex = 4;
 
 % for participantIndex = 3:length(dataFolderList)
   
@@ -187,30 +187,32 @@ thrHRV = 250;
 
 
 %% Compare HR with Empatica HR
-figure()
-tiledlayout(3,1)
-ax1 = nexttile;
-plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
-ylabel("HR [BPM]")
-title("Empatica HR")
+if false
+    figure()
+    tiledlayout(3,1)
+    ax1 = nexttile;
+    plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+    ylabel("HR [BPM]")
+    title("Empatica HR")
 
-ax2 = nexttile;
-hold on
-plot(stage4HR_time_resampled, movmean(stage4HR_resampled,1))
-hold off
-ylabel("HR [BPM]")
-title("HR repaired")
+    ax2 = nexttile;
+    hold on
+    plot(stage4HR_time_resampled, movmean(stage4HR_resampled,1))
+    hold off
+    ylabel("HR [BPM]")
+    title("HR repaired")
 
-ax3 = nexttile;
-hold on
-plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
-plot(stage4HR_time_resampled, movmean(stage4HR_resampled,750))
-hold off
-ylabel("HR [BPM]")
-title("Compare")
-legend(["Empatica HR", "HR repaired MA(750)"])
+    ax3 = nexttile;
+    hold on
+    plot(fileDataCell{4}.time, fileDataCell{4}.amplitude)
+    plot(stage4HR_time_resampled, movmean(stage4HR_resampled,750))
+    hold off
+    ylabel("HR [BPM]")
+    title("Compare")
+    legend(["Empatica HR", "HR repaired MA(750)"])
 
-linkaxes([ax1 ax2 ax3],'x')
+    linkaxes([ax1 ax2 ax3],'x')
+end
 
 
 %% Compute SCL and SCR from EDA
@@ -325,10 +327,60 @@ ylabel('Predictor importance score')
 
 colNamOfInt = string(colNamOfInt);
 
+%% Plot selected features over time
+if true
+   T = readtable('tabledata738278-4483Test.csv');
+   
+   stressAreas = [find(diff(T.stress)~=0);length(T.stress)]./4;
+   figure()
+   tiledlayout(5,1)
+   ax1 = nexttile;
+   hold on
+   minMax = [min(T.eda_features_max), max(T.eda_features_max)];
+   area([stressAreas(1)/60,stressAreas(2)/60],[minMax(2)*1.1,minMax(2)*1.1],minMax(1)*1.1,'EdgeColor', 'none','FaceColor',[0.7,0.7,0.7])
+   plot(0.25/60:0.25/60:length(T.stress)/4/60, T.eda_features_max)
+   ylabel("$max_{EDA}$")
+   hold off
+   
+   ax2 = nexttile;
+   hold on
+   minMax = [min(T.temp_features_std), max(T.temp_features_std)];
+   area([stressAreas(1)/60,stressAreas(2)/60],[minMax(2)*1.1,minMax(2)*1.1],minMax(1)*1.1,'EdgeColor', 'none','FaceColor',[0.7,0.7,0.7])
+   plot(0.25/60:0.25/60:length(T.stress)/4/60, T.temp_features_std)
+   ylabel("$\sigma_{TEMP}$")
+   hold off
+   
+   ax3 = nexttile;
+   hold on
+   minMax = [min(T.hr_features_mean), max(T.hr_features_mean)];
+   area([stressAreas(1)/60,stressAreas(2)/60],[minMax(2)*1.1,minMax(2)*1.1],minMax(1)*1.1,'EdgeColor', 'none','FaceColor',[0.7,0.7,0.7])
+   plot(0.25/60:0.25/60:length(T.stress)/4/60, T.hr_features_mean)
+   ylabel("$\mu_{HR}$")
+   hold off
+   
+   ax4 = nexttile;
+   hold on
+   minMax = [min(T.eda_scl_features_mean), max(T.eda_scl_features_mean)];
+   area([stressAreas(1)/60,stressAreas(2)/60],[minMax(2)*1.1,minMax(2)*1.1],minMax(1)*1.1,'EdgeColor', 'none','FaceColor',[0.7,0.7,0.7])
+   plot(0.25/60:0.25/60:length(T.stress)/4/60, T.eda_scl_features_mean)
+   ylabel("$\mu_{SCL}$")
+   hold off
+   
+   ax5 = nexttile;
+   hold on
+   minMax = [min(T.temp_features_min), max(T.temp_features_min)];
+   area([stressAreas(1)/60,stressAreas(2)/60],[minMax(2)*1.1,minMax(2)*1.1],minMax(1)*1.1,'EdgeColor', 'none','FaceColor',[0.7,0.7,0.7])
+   plot(0.25/60:0.25/60:length(T.stress)/4/60, T.temp_features_min)
+   ylabel("$min_{TEMP}$");xlabel("Time [minutes]")
+   hold off
+   
+   linkaxes([ax1 ax2 ax3 ax4 ax5],'x')
+end
+
 
 %% Train
 disp("Allocating variables")
-trainFeat = [37, 24, 17, 20, 34];
+% trainFeat = [37, 24, 17, 20, 34];
 % trainingDataGPU = gpuArray(table2array(tabledata(:,trainFeat)));
 % labelData = gpuArray(table2array(tabledata(:,40)));
 trainingData = table2array(tabledata(:,colNamOfInt(1:5)))';
