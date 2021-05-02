@@ -1,16 +1,13 @@
 package com.example.a22056_app;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.a22056_app.Models.DataPoint;
+import com.example.a22056_app.Models.DataPair;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.Tools.Notification;
 
@@ -23,34 +20,34 @@ public class PatientListAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     double[] firstPersonFeatures;
     double[] secondPersonFeatures;
-    DataPoint tempFirstPerson;
-    DataPoint tempSecondPerson;
-    DataPoint hrFirstPerson;
-    DataPoint hrSecondPerson;
-    DataPoint hrvFirstPerson;
-    DataPoint hrvSecondPerson;
+    DataPair tempFirstPerson;
+    DataPair tempSecondPerson;
+    DataPair hrFirstPerson;
+    DataPair hrSecondPerson;
+    DataPair hrvFirstPerson;
+    DataPair hrvSecondPerson;
 
-    public void setTempFirstPerson(DataPoint tempFirstPerson) {
+    public void setTempFirstPerson(DataPair tempFirstPerson) {
         this.tempFirstPerson = tempFirstPerson;
     }
 
-    public void setTempSecondPerson(DataPoint tempSecondPerson) {
+    public void setTempSecondPerson(DataPair tempSecondPerson) {
         this.tempSecondPerson = tempSecondPerson;
     }
 
-    public void setHrFirstPerson(DataPoint hrFirstPerson) {
+    public void setHrFirstPerson(DataPair hrFirstPerson) {
         this.hrFirstPerson = hrFirstPerson;
     }
 
-    public void setHrSecondPerson(DataPoint hrSecondPerson) {
+    public void setHrSecondPerson(DataPair hrSecondPerson) {
         this.hrSecondPerson = hrSecondPerson;
     }
 
-    public void setHrvFirstPerson(DataPoint hrvFirstPerson) {
+    public void setHrvFirstPerson(DataPair hrvFirstPerson) {
         this.hrvFirstPerson = hrvFirstPerson;
     }
 
-    public void setHrvSecondPerson(DataPoint hrvSecondPerson) {
+    public void setHrvSecondPerson(DataPair hrvSecondPerson) {
         this.hrvSecondPerson = hrvSecondPerson;
     }
 
@@ -71,7 +68,7 @@ public class PatientListAdapter extends BaseAdapter {
         this.firstPersonFeatures = firstPersonFeatures;
         this.secondPersonFeatures = secondPersonFeatures;
     }
-    public PatientListAdapter(Context ctx, ArrayList<Patient> patients, DataPoint hrFirstPerson, DataPoint hrSecondPerson, DataPoint tempFirstPerson, DataPoint tempSecondPerson, DataPoint hrvFirstPerson, DataPoint hrvSecondPerson){
+    public PatientListAdapter(Context ctx, ArrayList<Patient> patients, DataPair hrFirstPerson, DataPair hrSecondPerson, DataPair tempFirstPerson, DataPair tempSecondPerson, DataPair hrvFirstPerson, DataPair hrvSecondPerson){
         this.context = ctx;
         this.patients = patients;
         layoutInflater = LayoutInflater.from(context);
@@ -112,9 +109,9 @@ public class PatientListAdapter extends BaseAdapter {
         //String temp = "";
         //String hr = "";
         //String hrv = "";
-        DataPoint hr;
-        DataPoint temp;
-        DataPoint hrv;
+        DataPair hr;
+        DataPair temp;
+        DataPair hrv;
 
         if (position == 0){
             hr = hrFirstPerson;

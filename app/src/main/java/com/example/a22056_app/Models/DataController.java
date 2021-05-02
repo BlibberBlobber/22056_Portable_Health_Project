@@ -5,11 +5,11 @@ import java.util.ArrayList;
 public class DataController {
 
     String dataType;
-    ArrayList<DataPoint> dataSeries = new ArrayList<>();
+    ArrayList<DataPair> dataSeries = new ArrayList<>();
     //Tilføj features
 
 
-    public DataController(String dataType, ArrayList<DataPoint> dataSeries){
+    public DataController(String dataType, ArrayList<DataPair> dataSeries){
         this.dataType = dataType;
         this.dataSeries = dataSeries;
     }
@@ -24,11 +24,11 @@ public class DataController {
         this.dataType = dataType;
     }
 
-    public ArrayList<DataPoint> getDataSeries() {
+    public ArrayList<DataPair> getDataSeries() {
         return dataSeries;
     }
 
-    public void setDataSeries(ArrayList<DataPoint> dataSeries) {
+    public void setDataSeries(ArrayList<DataPair> dataSeries) {
         this.dataSeries = dataSeries;
     }
 

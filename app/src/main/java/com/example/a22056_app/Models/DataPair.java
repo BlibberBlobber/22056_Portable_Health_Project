@@ -1,6 +1,7 @@
 package com.example.a22056_app.Models;
 
-import com.jjoe64.graphview.series.DataPointInterface;
+
+import android.util.Log;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -9,16 +10,17 @@ import java.util.Date;
 
 // Serializable gør at man kan sætte DataPoint objekter i intent.putExtra()
 
-public class DataPoint implements Serializable {
+public class DataPair implements Serializable{
     String date;
-   // Date date;
-   // SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss.SSSSSS");
+    //Date date;
+    //SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSSSSS");
     double value;
 
-    public DataPoint(String dateString, double value){
+    public DataPair(String dateString, double value){
         /*try {
             this.date = format.parse(dateString);
         } catch (ParseException e) {
+            Log.d("DATAREADER","Error appeared parsing date string " + dateString);
             e.printStackTrace();
         } */
         this.date = dateString;

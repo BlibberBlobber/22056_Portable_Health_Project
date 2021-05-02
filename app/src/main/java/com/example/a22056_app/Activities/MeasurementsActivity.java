@@ -2,19 +2,25 @@ package com.example.a22056_app.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.LinearLayout;
+import android.util.Log;
 import android.widget.TextView;
 
-import com.example.a22056_app.Models.DataPoint;
+import com.example.a22056_app.Models.DataPair;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.R;
+import com.example.a22056_app.Tools.DataParser;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MeasurementsActivity extends AppCompatActivity {
 
@@ -23,11 +29,14 @@ public class MeasurementsActivity extends AppCompatActivity {
     int intervalCounter;
     String patientName;
     Patient patient;
-    ArrayList<double[]> patientFeatures;
-    ArrayList<DataPoint> hrArrayList;
-    ArrayList<DataPoint> hrvArrayList;
-    ArrayList<DataPoint> tempArrayList;
-  //  private LineGraphSeries<DataPoint> signal = new LineGraphSeries<DataPoint>();
+    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSSSSS");
+    SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm:ss");
+    //ArrayList<double[]> patientFeatures;
+    String pid;
+    ArrayList<DataPair> hrArrayList;
+    ArrayList<DataPair> hrvArrayList;
+    ArrayList<DataPair> tempArrayList;
+    private LineGraphSeries<DataPoint> signal = new LineGraphSeries<DataPoint>();
     TextView nameTextView;
     TextView stressTextView;
     TextView hrTextView;
@@ -45,14 +54,39 @@ public class MeasurementsActivity extends AppCompatActivity {
         graphView = findViewById(R.id.hrGraphView);
         Bundle extras = getIntent().getExtras();
         patientName = extras.get("name").toString();
-        patientFeatures = (ArrayList<double[]>) extras.get("features");
-        hrArrayList = (ArrayList<DataPoint>) extras.getSerializable("hr");
-        hrvArrayList = (ArrayList<DataPoint>) extras.getSerializable("hrv");
-        tempArrayList = (ArrayList<DataPoint>) extras.getSerializable("temp");
+        //patientFeatures = (ArrayList<double[]>) extras.get("features");
+        pid = extras.get("pid").toString();
         intervalCounter = extras.getInt("intervalcounter");
         nameTextView.setText("Patient name: " + patientName);
+        getPatientData();
         mHandler = new Handler();
         startRepeatingTask();
+
+    }
+
+    public void getPatientData(){
+        InputStream hrIS;
+        InputStream hrvIS;
+        InputStream tempIS;
+        DataParser parser = new DataParser();
+        if (pid.equals("1")){
+            hrIS = getResources().openRawResource(R.raw.hr_person_1);
+            hrvIS = getResources().openRawResource(R.raw.hrv_person_1);
+            tempIS = getResources().openRawResource(R.raw.temp_person_1);
+        } else{
+            hrIS = getResources().openRawResource(R.raw.hr_person_2);
+            hrvIS = getResources().openRawResource(R.raw.hrv_person_2);
+            tempIS = getResources().openRawResource(R.raw.temp_person_2);
+        }
+        try {
+            hrArrayList = parser.getMeasurements(hrIS);
+            hrvArrayList = parser.getMeasurements(hrvIS);
+            tempArrayList = parser.getMeasurements(tempIS);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("DHREADER","Error appeared while calling getMeasurements()");
+        }
+
     }
 
     Runnable mStatusChecker = new Runnable() {
@@ -84,12 +118,27 @@ public class MeasurementsActivity extends AppCompatActivity {
         graphView.addSeries(signal);
         graphView.getViewport().setScalable(true);
         graphView.getViewport().setScrollable(true); */
-        DataPoint hrDataPoint = hrArrayList.get(intervalCounter);
-        DataPoint hrvDataPoint = hrvArrayList.get(intervalCounter);
-        DataPoint tempDataPoint = tempArrayList.get(intervalCounter);
-        hrTextView.setText("Heart rate: " + Math.round(hrDataPoint.getValue()));
-        stressTextView.setText("HRV: " + Math.round(hrvDataPoint.getValue()));
-        tempTextView.setText("Temperature: " + Math.round(tempDataPoint.getValue()));
+        DataPair hrDataPair = hrArrayList.get(intervalCounter);
+        DataPair hrvDataPair = hrvArrayList.get(intervalCounter);
+        DataPair tempDataPair = tempArrayList.get(intervalCounter);
+        hrTextView.setText("Heart rate: " + Math.round(hrDataPair.getValue()));
+        stressTextView.setText("HRV: " + Math.round(hrvDataPair.getValue()));
+        tempTextView.setText("Temperature: " + Math.round(tempDataPair.getValue()));
+        Date date = new Date();
+        try {
+            String string = hrArrayList.get(intervalCounter).getDate().replace("'","");
+            date = format.parse(string);
+            Log.d("DATE", "Date after parsing " + date);
+           // date = displayFormat.parse(displayFormat.format(date));
+            Log.d("DATE", "Date.getTime() " + date.getTime());
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        signal.appendData(new DataPoint(date.getTime(), hrArrayList.get(intervalCounter).getValue()), false, 100000, true);
+        graphView.addSeries(signal);
+        graphView.getViewport().setScalable(true);
+        graphView.getViewport().setScrollable(true);
 
     }
     private void startRepeatingTask(){
@@ -98,6 +147,7 @@ public class MeasurementsActivity extends AppCompatActivity {
     private void stopRepeatingTask(){
         mHandler.removeCallbacks(mStatusChecker);
     }
+
 
     @Override
     protected void onDestroy() {
