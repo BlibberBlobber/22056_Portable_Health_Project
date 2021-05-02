@@ -2,18 +2,13 @@ package com.example.a22056_app.Tools;
 
 import android.util.Log;
 
-import com.example.a22056_app.Models.DataPoint;
-import com.example.a22056_app.R;
+import com.example.a22056_app.Models.DataPair;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class DataParser {
@@ -43,8 +38,9 @@ public class DataParser {
                 }
                 counter ++;
             }
-            Log.d("DATAREADER", "Size of data array " + valueArray.size());
+           /* Log.d("DATAREADER", "Size of data array " + valueArray.size());
             Log.d("DATAREADER", "Sample from arraylist " + valueArray.get(10)[0]);
+            Log.d("DATAREADER", "Sample date from arraylist " + valueArray.get(10)[1]); */
             return  valueArray;
         } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
@@ -56,13 +52,13 @@ public class DataParser {
 
     }
 
-    public ArrayList<DataPoint> getMeasurements(InputStream inputStream) throws  IOException{
+    public ArrayList<DataPair> getMeasurements(InputStream inputStream) throws  IOException{
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader reader = new CSVReader(inputStreamReader);
             reader.getLinesRead();
             String[] nextLine;
-            ArrayList<DataPoint> valueArray = new ArrayList<>();
+            ArrayList<DataPair> valueArray = new ArrayList<>();
             int counter = 0;
             while ((nextLine = reader.readNext()) != null) {
                 String date = "";
@@ -72,15 +68,16 @@ public class DataParser {
                         value = Double.parseDouble(nextLine[i]);
                     } else {
                         date = nextLine[i];
+                        date = date.replace("'","");
                     }
                 }
-                DataPoint dataPoint = new DataPoint(date, value);
-                valueArray.add(dataPoint);
+                DataPair dataPair = new DataPair(date, value);
+                valueArray.add(dataPair);
                 counter ++;
             }
-            Log.d("DATAREADER", "Size of data array in get measurements " + valueArray.size());
-            Log.d("DATAREADER", "Sample value from arraylist in measurements" + valueArray.get(10).getValue());
-            Log.d("DATAREADER", "Sample date from arraylist in measurements" + valueArray.get(10).getDate());
+            //Log.d("DATAREADER", "Size of data array in get measurements " + valueArray.size());
+            //Log.d("DATAREADER", "Sample value from arraylist in measurements" + valueArray.get(10).getValue());
+            //Log.d("DATAREADER", "Sample date from arraylist in measurements" + valueArray.get(10).getDate());
 
             return  valueArray;
         } catch (IOException | CsvValidationException e) {

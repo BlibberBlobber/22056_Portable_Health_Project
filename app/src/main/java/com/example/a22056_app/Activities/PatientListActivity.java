@@ -20,7 +20,7 @@ import com.empatica.empalink.config.EmpaSensorType;
 import com.empatica.empalink.config.EmpaStatus;
 import com.empatica.empalink.delegate.EmpaDataDelegate;
 import com.empatica.empalink.delegate.EmpaStatusDelegate;
-import com.example.a22056_app.Models.DataPoint;
+import com.example.a22056_app.Models.DataPair;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.PatientListAdapter;
 import com.example.a22056_app.R;
@@ -34,7 +34,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class PatientListActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
@@ -42,14 +41,14 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private ListView listView;
     private Button addPatientButton;
     private PatientListAdapter listAdapter;
-    private ArrayList<double[]> firstPersonFeatures;
-    private ArrayList<double[]> secondPersonFeatures;
-    private ArrayList<DataPoint> hrFirstPerson;
-    private ArrayList<DataPoint> hrSecondPerson;
-    private ArrayList<DataPoint> hrvFirstPerson;
-    private ArrayList<DataPoint> hrvSecondPerson;
-    private ArrayList<DataPoint> tempFirstPerson;
-    private ArrayList<DataPoint> tempSecondPerson;
+    //private ArrayList<double[]> firstPersonFeatures;
+    //private ArrayList<double[]> secondPersonFeatures;
+    private ArrayList<DataPair> hrFirstPerson;
+    private ArrayList<DataPair> hrSecondPerson;
+    private ArrayList<DataPair> hrvFirstPerson;
+    private ArrayList<DataPair> hrvSecondPerson;
+    private ArrayList<DataPair> tempFirstPerson;
+    private ArrayList<DataPair> tempSecondPerson;
     private ArrayList<Patient> patients = new ArrayList<>();
    // Toolbar toolbar;
     ProgressBar progressBar;
@@ -71,10 +70,10 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         InputStream hrvFirstPersonIS = getResources().openRawResource(R.raw.hrv_person_1);
         InputStream hrvSecondPersonIS = getResources().openRawResource(R.raw.hrv_person_2);
         InputStream tempFirstPersonIS = getResources().openRawResource(R.raw.temp_person_1);
-        InputStream tempSecondPersonIS = getResources().openRawResource(R.raw.temp_person_1);
+        InputStream tempSecondPersonIS = getResources().openRawResource(R.raw.temp_person_2);
         try {
-            firstPersonFeatures = parser.getData(firstInputStream);
-            secondPersonFeatures = parser.getData(secondInputStream);
+            //firstPersonFeatures = parser.getData(firstInputStream);
+            //secondPersonFeatures = parser.getData(secondInputStream);
             hrFirstPerson = parser.getMeasurements(hrFirstPersonIS);
             hrSecondPerson = parser.getMeasurements(hrSecondPersonIS);
             hrvFirstPerson = parser.getMeasurements(hrvFirstPersonIS);
@@ -157,17 +156,33 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
                 Intent intent = new Intent(PatientListActivity.this, MeasurementsActivity.class);
                 Patient patient = patients.get(position);
                 intent.putExtra("name", patient.getUser().getFullName());
+               // Bundle bundle = new Bundle();
                 if (position == 0){
-                    intent.putExtra("features", firstPersonFeatures);
-                    intent.putExtra("hrv", hrvFirstPerson);
-                    intent.putExtra("hr", hrFirstPerson);
-                    intent.putExtra("temp", tempFirstPerson);
+                    //intent.putExtra("features", firstPersonFeatures);
+                    intent.putExtra("pid","1");
+                    //intent.putExtra("hr", hrFirstPerson.toArray(new DataPoint[0]));
+                    //intent.putExtra("hrv", hrvFirstPerson.toArray(new DataPoint[0]));
+                    //intent.putExtra("temp", tempFirstPerson.toArray(new DataPoint[0]));
+                   // intent.putExtra("hrv", hrvFirstPerson);
+                   // intent.putExtra("hr", hrFirstPerson);
+                   // intent.putExtra("temp", tempFirstPerson);
+                    //bundle.putParcelableArray("hr", (Parcelable[]) hrFirstPerson.toArray(new DataPoint[0]));
+                    //bundle.putParcelableArray("hrv", (Parcelable[]) hrvFirstPerson.toArray(new DataPoint[0]));
+                    //bundle.putParcelableArray("temp", (Parcelable[]) tempFirstPerson.toArray(new DataPoint[0]));
                 } else{
-                    intent.putExtra("features", secondPersonFeatures);
-                    intent.putExtra("hrv", hrvSecondPerson);
-                    intent.putExtra("hr", hrSecondPerson);
-                    intent.putExtra("temp", tempSecondPerson);
+                    //intent.putExtra("features", secondPersonFeatures);
+                    intent.putExtra("pid","2");
+                    //intent.putExtra("hr", hrSecondPerson.toArray(new DataPoint[0]));
+                    //intent.putExtra("hrv", hrvSecondPerson.toArray(new DataPoint[0]));
+                    //intent.putExtra("temp", tempSecondPerson.toArray(new DataPoint[0]));
+                    //bundle.putParcelableArray("hr", (Parcelable[]) hrSecondPerson.toArray(new DataPoint[0]));
+                    //bundle.putParcelableArray("hrv", (Parcelable[]) hrvSecondPerson.toArray(new DataPoint[0]));
+                    //bundle.putParcelableArray("temp", (Parcelable[]) tempSecondPerson.toArray(new DataPoint[0]));
+                    //intent.putExtra("hrv", hrvSecondPerson);
+                    //intent.putExtra("hr", hrSecondPerson);
+                    //intent.putExtra("temp", tempSecondPerson);
                 }
+                //intent.putExtra("measurements", bundle);
                 intent.putExtra("intervalcounter", intervalCounter);
                 startActivity(intent);
             }
