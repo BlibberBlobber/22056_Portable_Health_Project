@@ -30,7 +30,7 @@ public class Notification extends AppCompatActivity {
         builder.setSmallIcon(R.mipmap.ic_launcher_round);
         //builder.setCategory("alarm");
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        builder.setContentTitle("*Important* " + nameText);
+        builder.setContentTitle("*Alert* " + nameText);
         builder.setContentText("In high risk");
         builder.setAutoCancel(true);
 

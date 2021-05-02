@@ -2,6 +2,7 @@ package com.example.a22056_app.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,6 +12,8 @@ import com.example.a22056_app.Models.DataPair;
 import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.R;
 import com.example.a22056_app.Tools.DataParser;
+import com.example.a22056_app.Tools.LogisticRegression;
+import com.example.a22056_app.Tools.Notification;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -20,10 +23,22 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class MeasurementsActivity extends AppCompatActivity {
 
+    Notification notification = new Notification();
+    private static final double intercept = -1.57844843892432;
+    private static final double eda_features_max =-1.57432446249465;
+    private static final double eda_scl_features_mean = -0.615271239848967;
+    private static final double hr_features_mean = -0.868413788939345;
+    private static final double temp_features_std = -0.751876628298134;
+    private static final double temp_features_max = 1.81182633691859;
+    boolean STRESS = false;
+
+    LogisticRegression LogisticRegressionModel;
     Handler mHandler;
     int interval = 10000;
     int intervalCounter;
@@ -36,6 +51,7 @@ public class MeasurementsActivity extends AppCompatActivity {
     ArrayList<DataPair> hrArrayList;
     ArrayList<DataPair> hrvArrayList;
     ArrayList<DataPair> tempArrayList;
+    ArrayList<double[]> featureList;
     private LineGraphSeries<DataPoint> signal = new LineGraphSeries<DataPoint>();
     TextView nameTextView;
     TextView stressTextView;
@@ -60,6 +76,10 @@ public class MeasurementsActivity extends AppCompatActivity {
         nameTextView.setText("Patient name: " + patientName);
         getPatientData();
         mHandler = new Handler();
+
+        double[] coefficients = {intercept,eda_features_max,eda_scl_features_mean,hr_features_mean,temp_features_std,temp_features_max};
+        LogisticRegressionModel = new LogisticRegression(coefficients);
+
         startRepeatingTask();
 
     }
@@ -85,6 +105,13 @@ public class MeasurementsActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("DHREADER","Error appeared while calling getMeasurements()");
+        }
+
+        InputStream inputStream = getResources().openRawResource(R.raw.featuredata_tp2_s6);
+        try {
+            featureList = parser.getData(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -140,7 +167,40 @@ public class MeasurementsActivity extends AppCompatActivity {
         graphView.getViewport().setScalable(true);
         graphView.getViewport().setScrollable(true);
 
+        handleStressedInfo();
+
+
     }
+
+    private void handleStressedInfo(){
+
+        List temp = featureList.subList(intervalCounter*40+4600,(intervalCounter+1)*(40)+4600);
+
+        int[] prediction = LogisticRegressionModel.predict(temp);
+
+        int sum = 0;
+        for (Integer d: prediction) sum += d;
+        if (sum >= prediction.length/2 && STRESS == false) {
+            STRESS = true;
+            //stressTextView.setText("Stressed");
+            // send out notification
+
+            doNotification(patientName);
+
+
+        } else if (sum < prediction.length/2 && STRESS == true) {
+            STRESS = false;
+            //stressTextView.setText("Not stressed");
+        }
+
+
+    }
+
+    private void doNotification(String nameText) {
+        notification.addNotification(getApplicationContext(), nameText);
+        //Log.i("DEBUG_notification", "nameText");
+    }
+
     private void startRepeatingTask(){
         mStatusChecker.run();
     }
