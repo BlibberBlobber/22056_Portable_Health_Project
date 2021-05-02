@@ -72,8 +72,8 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         InputStream firstInputStream = getResources().openRawResource(R.raw.featuresperson1);
         InputStream secondInputStream = getResources().openRawResource(R.raw.featuresperson2);
         InputStream hrFirstPersonIS = getResources().openRawResource(R.raw.hr_person_1);
-        InputStream hrSecondPersonIS = getResources().openRawResource(R.raw.hr_person_2);
         InputStream hrvFirstPersonIS = getResources().openRawResource(R.raw.hrv_person_1);
+        InputStream hrSecondPersonIS = getResources().openRawResource(R.raw.hr_person_2);
         InputStream hrvSecondPersonIS = getResources().openRawResource(R.raw.hrv_person_2);
         InputStream tempFirstPersonIS = getResources().openRawResource(R.raw.temp_person_1);
         InputStream tempSecondPersonIS = getResources().openRawResource(R.raw.temp_person_1);

@@ -62,8 +62,6 @@ public class DataParser {
             e.printStackTrace();
             return null;
         }
-
-        return null;
     }
 
     public void savePrivately(String dataToStore, Context context) {
