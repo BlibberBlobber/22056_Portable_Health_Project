@@ -221,14 +221,33 @@ public class MeasurementsActivity extends AppCompatActivity {
             tempSignal.appendData(new DataPoint(s, tempArrayList.get(i).getValue()), true, 100000, true);
 
 
+    }
+
+        //hrSignal.appendData(new DataPoint(seconds, hrArrayList.get(intervalCounter).getValue()), false, 100000, true);
+        //hrvSignal.appendData(new DataPoint(seconds, hrvArrayList.get(intervalCounter).getValue()), false, 100000, true);
+        //tempSignal.appendData(new DataPoint(seconds, tempArrayList.get(intervalCounter).getValue()), false, 100000, true);
+        Log.d("DH_TEST","Series count " + hrvGraphView.getSeries().size());
+        hrGraphView.addSeries(hrSignal);
+        hrvGraphView.addSeries(hrvSignal);
+        tempGraphView.addSeries(tempSignal);
+        hrGraphView.getViewport().setMaxX((intervalCounter*8+8)*hrTS);
+        hrvGraphView.getViewport().setMaxX((intervalCounter*8+8)*hrTS);
+        tempGraphView.getViewport().setMaxX((intervalCounter*4+4)*tempTS);
+        hrGraphView.refreshDrawableState();
+        hrvGraphView.refreshDrawableState();
+        tempGraphView.refreshDrawableState();
+
         handleStressedInfo();
+
+        intervalCounter ++;
+
 
 
     }
-
     private void handleStressedInfo(){
 
-        List temp = featureList.subList(intervalCounter*40+4600,(intervalCounter+1)*(40)+4600);
+        int sample_shift_to_get_to_stress_faster = 3000;
+        List temp = featureList.subList(intervalCounter*40+sample_shift_to_get_to_stress_faster,(intervalCounter+1)*(40)+sample_shift_to_get_to_stress_faster);
 
         int[] prediction = LogisticRegressionModel.predict(temp);
 
@@ -246,28 +265,7 @@ public class MeasurementsActivity extends AppCompatActivity {
             STRESS = false;
             //stressTextView.setText("Not stressed");
         }
-
-
-
-        }
-        //hrSignal.appendData(new DataPoint(seconds, hrArrayList.get(intervalCounter).getValue()), false, 100000, true);
-        //hrvSignal.appendData(new DataPoint(seconds, hrvArrayList.get(intervalCounter).getValue()), false, 100000, true);
-        //tempSignal.appendData(new DataPoint(seconds, tempArrayList.get(intervalCounter).getValue()), false, 100000, true);
-        Log.d("DH_TEST","Series count " + hrvGraphView.getSeries().size());
-        hrGraphView.addSeries(hrSignal);
-        hrvGraphView.addSeries(hrvSignal);
-        tempGraphView.addSeries(tempSignal);
-        hrGraphView.getViewport().setMaxX((intervalCounter*8+8)*hrTS);
-        hrvGraphView.getViewport().setMaxX((intervalCounter*8+8)*hrTS);
-        tempGraphView.getViewport().setMaxX((intervalCounter*4+4)*tempTS);
-        hrGraphView.refreshDrawableState();
-        hrvGraphView.refreshDrawableState();
-        tempGraphView.refreshDrawableState();
-
-        intervalCounter ++;
-
     }
-
     private void doNotification(String nameText) {
         notification.addNotification(getApplicationContext(), nameText);
         //Log.i("DEBUG_notification", "nameText");

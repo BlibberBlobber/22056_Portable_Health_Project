@@ -127,24 +127,17 @@ public class PatientListAdapter extends BaseAdapter {
         } else {
             stressTextView.setText("Stressed");
             stressTextView.setTextColor(Color.RED);
-
-
             doNotification(nameTextView.getText().toString());
         }
 
-        }
-
-        }
-
-
-
-
         nameTextView.setText(patients.get(position).getUser().getFullName());
         return convertView;
-    }
+        }
 
     private void doNotification(String nameText) {
         notification.addNotification(context, nameText);
     }
 
-}
+        }
+//
+
