@@ -1,6 +1,7 @@
 package com.example.a22056_app;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,10 +67,11 @@ public class PatientListAdapter extends BaseAdapter {
         this.firstPersonFeatures = firstPersonFeatures;
         this.secondPersonFeatures = secondPersonFeatures;
     }
-    public PatientListAdapter(Context ctx, ArrayList<Patient> patients, DataPair hrFirstPerson, DataPair hrSecondPerson, DataPair tempFirstPerson, DataPair tempSecondPerson, DataPair hrvFirstPerson, DataPair hrvSecondPerson){
+    public PatientListAdapter(Context ctx, ArrayList<Patient> patients, double[] firstPersonFeatures, double[] secondPersonFeatures, DataPair hrFirstPerson, DataPair hrSecondPerson, DataPair tempFirstPerson, DataPair tempSecondPerson, DataPair hrvFirstPerson, DataPair hrvSecondPerson){
         this.context = ctx;
         this.patients = patients;
         layoutInflater = LayoutInflater.from(context);
+        this.firstPersonFeatures = firstPersonFeatures;
         this.hrFirstPerson = hrFirstPerson;
         this.hrSecondPerson = hrSecondPerson;
         this.tempFirstPerson = tempFirstPerson;
@@ -104,34 +106,26 @@ public class PatientListAdapter extends BaseAdapter {
         TextView tempTextView = convertView.findViewById(R.id.temperatureTextView);
         TextView hrTextView = convertView.findViewById(R.id.hrTextView);
         TextView stressTextView = convertView.findViewById(R.id.stressTextView);
-        //String temp = "";
-        //String hr = "";
-        //String hrv = "";
-        DataPair hr;
-        DataPair temp;
-        DataPair hrv;
+        String temp = "";
+        String hr = "";
+        double[] currentPerson;
 
         if (position == 0){
-            hr = hrFirstPerson;
-            temp = tempFirstPerson;
-            hrv = hrvFirstPerson;
+            currentPerson = firstPersonFeatures;
         } else{
-            hr = hrSecondPerson;
-            temp = tempSecondPerson;
-            hrv = hrvSecondPerson;
+            currentPerson = secondPersonFeatures;
         }
-       // hr = String.valueOf((int) Math.round(currentPerson[25]));
-       // temp = String.valueOf((int) Math.round(currentPerson[34]));
-        tempTextView.setText("Temperature: " + Math.round(temp.getValue()));
-        hrTextView.setText("Heart rate: " + Math.round(hr.getValue()));
-        stressTextView.setText("HRV: " + Math.round(hrv.getValue()));
-       /* if (currentPerson[39] == 0.0){
+        hr = String.valueOf((int) Math.round(currentPerson[25]));
+        temp = String.valueOf((int) Math.round(currentPerson[34]));
+        tempTextView.setText("Temperature: " + temp);
+        hrTextView.setText("Heart rate: " + hr);
+        if (currentPerson[39] == 0.0){
             stressTextView.setText("Not stressed");
             stressTextView.setTextColor(Color.GREEN);
         } else {
             stressTextView.setText("Stressed");
             stressTextView.setTextColor(Color.RED);
-        } */
+        }
 
 
         nameTextView.setText(patients.get(position).getUser().getFullName());
