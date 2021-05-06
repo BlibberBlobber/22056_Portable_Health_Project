@@ -44,8 +44,8 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private ListView listView;
     private Button addPatientButton;
     private PatientListAdapter listAdapter;
-    //private ArrayList<double[]> firstPersonFeatures;
-    //private ArrayList<double[]> secondPersonFeatures;
+    private ArrayList<double[]> firstPersonFeatures;
+    private ArrayList<double[]> secondPersonFeatures;
     private ArrayList<DataPair> hrFirstPerson;
     private ArrayList<DataPair> hrSecondPerson;
     private ArrayList<DataPair> hrvFirstPerson;
@@ -77,8 +77,8 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         InputStream tempFirstPersonIS = getResources().openRawResource(R.raw.temp_person_1);
         InputStream tempSecondPersonIS = getResources().openRawResource(R.raw.temp_person_2);
         try {
-            //firstPersonFeatures = parser.getData(firstInputStream);
-            //secondPersonFeatures = parser.getData(secondInputStream);
+            firstPersonFeatures = parser.getData(firstInputStream);
+            secondPersonFeatures = parser.getData(secondInputStream);
             hrFirstPerson = parser.getMeasurements(hrFirstPersonIS);
             hrSecondPerson = parser.getMeasurements(hrSecondPersonIS);
             hrvFirstPerson = parser.getMeasurements(hrvFirstPersonIS);
@@ -140,14 +140,14 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         }
     };
     private void updateTable(){
-        //listAdapter.setFirstPersonFeatures(firstPersonFeatures.get(intervalCounter));
-        //listAdapter.setSecondPersonFeatures(secondPersonFeatures.get(intervalCounter));
+        listAdapter.setFirstPersonFeatures(firstPersonFeatures.get(intervalCounter));
+        listAdapter.setSecondPersonFeatures(secondPersonFeatures.get(intervalCounter));
         listAdapter.setHrFirstPerson(hrFirstPerson.get(intervalCounter));
         listAdapter.setHrSecondPerson(hrSecondPerson.get(intervalCounter));
         listAdapter.setTempFirstPerson(tempFirstPerson.get(intervalCounter));
         listAdapter.setTempSecondPerson(tempSecondPerson.get(intervalCounter));
         listAdapter.setHrvFirstPerson(hrvFirstPerson.get(intervalCounter));
-        listAdapter.setHrSecondPerson(hrvSecondPerson.get(intervalCounter));
+        listAdapter.setHrvSecondPerson(hrvSecondPerson.get(intervalCounter));
         listAdapter.notifyDataSetChanged();
     }
 
@@ -201,7 +201,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
 
     private void setListAdapter(ArrayList<Patient> patients){
 
-        listAdapter = new PatientListAdapter(this, patients, hrFirstPerson.get(0), hrSecondPerson.get(0), tempFirstPerson.get(0), tempSecondPerson.get(0), hrvFirstPerson.get(0), hrvSecondPerson.get(0));
+        listAdapter = new PatientListAdapter(this, patients, firstPersonFeatures.get(0), secondPersonFeatures.get(0), hrFirstPerson.get(0), hrSecondPerson.get(0), tempFirstPerson.get(0), tempSecondPerson.get(0), hrvFirstPerson.get(0), hrvSecondPerson.get(0));
         listView.setAdapter(listAdapter);
 
     }
