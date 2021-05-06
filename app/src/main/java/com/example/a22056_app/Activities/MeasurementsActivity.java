@@ -246,7 +246,7 @@ public class MeasurementsActivity extends AppCompatActivity {
     }
     private void handleStressedInfo(){
 
-        int sample_shift_to_get_to_stress_faster = 3000;
+        int sample_shift_to_get_to_stress_faster = 3700;
         List temp = featureList.subList(intervalCounter*40+sample_shift_to_get_to_stress_faster,(intervalCounter+1)*(40)+sample_shift_to_get_to_stress_faster);
 
         int[] prediction = LogisticRegressionModel.predict(temp);
