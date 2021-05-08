@@ -18,6 +18,7 @@ import com.example.a22056_app.Tools.DataParser;
 import com.example.a22056_app.Tools.LogisticRegression;
 import com.example.a22056_app.Tools.Notification;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
@@ -58,13 +59,11 @@ public class MeasurementsActivity extends AppCompatActivity {
     LineGraphSeries<DataPoint> hrSignal = new LineGraphSeries<DataPoint>();
     LineGraphSeries<DataPoint> hrvSignal = new LineGraphSeries<>();
     LineGraphSeries<DataPoint> tempSignal = new LineGraphSeries<>();
+    LineGraphSeries<DataPoint> edaSignal = new LineGraphSeries<>();
     ArrayList<DataPair> hrArrayList;
     ArrayList<DataPair> hrvArrayList;
     ArrayList<DataPair> tempArrayList;
-
-    ArrayList<double[]> featureList;
-    private LineGraphSeries<DataPoint> signal = new LineGraphSeries<DataPoint>();
-
+    ArrayList<DataPair> edaArrayList;
     TextView nameTextView;
     TextView stressTextView;
     TextView hrTextView;
@@ -72,6 +71,7 @@ public class MeasurementsActivity extends AppCompatActivity {
     GraphView hrGraphView;
     GraphView hrvGraphView;
     GraphView tempGraphView;
+    GraphView edaGraphView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +84,15 @@ public class MeasurementsActivity extends AppCompatActivity {
         hrGraphView = findViewById(R.id.hrGraphView);
         hrvGraphView = findViewById(R.id.hrvGraphView);
         tempGraphView = findViewById(R.id.tempGraphView);
+        edaGraphView = findViewById(R.id.edaGraphView);
         Bundle extras = getIntent().getExtras();
         patientName = extras.get("name").toString();
         //patientFeatures = (ArrayList<double[]>) extras.get("features");
         pid = extras.get("pid").toString();
         //intervalCounter = extras.getInt("intervalcounter");
+        double test = Double.parseDouble("0.250123653846154");
+        Log.d("DH","Double test " + test);
+
         nameTextView.setText("Patient name: " + patientName);
         getPatientData();
         mHandler = new Handler();
@@ -99,18 +103,25 @@ public class MeasurementsActivity extends AppCompatActivity {
 
 
         hrGraphView.setTitle("HR signal");
+        hrGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seconds");
         hrvGraphView.setTitle("HRV signal");
+        hrvGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seconds");
         tempGraphView.setTitle("Temperature signal");
+        tempGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seconds");
+        edaGraphView.setTitle("EDA signal");
+        edaGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seconds");
         hrGraphView.getViewport().setScalable(true);
         hrGraphView.getViewport().setScrollable(true);
         hrvGraphView.getViewport().setScalable(true);
         hrvGraphView.getViewport().setScrollable(true);
         tempGraphView.getViewport().setScalable(true);
         tempGraphView.getViewport().setScrollable(true);
+        edaGraphView.getViewport().setScrollable(true);
+        edaGraphView.getViewport().setScalable(true);
         hrGraphView.getViewport().setMinX(0);
         hrvGraphView.getViewport().setMinX(0);
         tempGraphView.getViewport().setMinX(0);
-
+        edaGraphView.getViewport().setMinX(0);
         startRepeatingTask();
 
     }
@@ -119,23 +130,27 @@ public class MeasurementsActivity extends AppCompatActivity {
         InputStream hrIS;
         InputStream hrvIS;
         InputStream tempIS;
+        InputStream edaIS;
         InputStream featuresIS;
         DataParser parser = new DataParser();
         if (pid.equals("1")){
             hrIS = getResources().openRawResource(R.raw.hr_person_1);
             hrvIS = getResources().openRawResource(R.raw.hrv_person_1);
             tempIS = getResources().openRawResource(R.raw.temp_person_1);
+            edaIS = getResources().openRawResource(R.raw.eda_scl_person_1);
             featuresIS = getResources().openRawResource(R.raw.featuresperson1);
         } else{
             hrIS = getResources().openRawResource(R.raw.hr_person_2);
             hrvIS = getResources().openRawResource(R.raw.hrv_person_2);
             tempIS = getResources().openRawResource(R.raw.temp_person_2);
+            edaIS = getResources().openRawResource(R.raw.eda_scl_person_2);
             featuresIS = getResources().openRawResource(R.raw.featuresperson2);
         }
         try {
             hrArrayList = parser.getMeasurements(hrIS);
             hrvArrayList = parser.getMeasurements(hrvIS);
             tempArrayList = parser.getMeasurements(tempIS);
+            edaArrayList = parser.getMeasurements(edaIS);
             patientFeatures = parser.getData(featuresIS);
         } catch (IOException e) {
             e.printStackTrace();
@@ -219,6 +234,7 @@ public class MeasurementsActivity extends AppCompatActivity {
             //Log.d("DH_TEST", "For loop B counter " + i);
             double s = intervalCounter + (i - intervalCounter*4)*tempTS;
             tempSignal.appendData(new DataPoint(s, tempArrayList.get(i).getValue()), true, 100000, true);
+            edaSignal.appendData(new DataPoint(s, edaArrayList.get(i).getValue()), true, 10000, true);
 
 
     }
@@ -230,9 +246,11 @@ public class MeasurementsActivity extends AppCompatActivity {
         hrGraphView.addSeries(hrSignal);
         hrvGraphView.addSeries(hrvSignal);
         tempGraphView.addSeries(tempSignal);
+        edaGraphView.addSeries(edaSignal);
         hrGraphView.getViewport().setMaxX((intervalCounter*8+8)*hrTS);
         hrvGraphView.getViewport().setMaxX((intervalCounter*8+8)*hrTS);
         tempGraphView.getViewport().setMaxX((intervalCounter*4+4)*tempTS);
+        edaGraphView.getViewport().setMaxX((intervalCounter*4+4)*tempTS);
         hrGraphView.refreshDrawableState();
         hrvGraphView.refreshDrawableState();
         tempGraphView.refreshDrawableState();
