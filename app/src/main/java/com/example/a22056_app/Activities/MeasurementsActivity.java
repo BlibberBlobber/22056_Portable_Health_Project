@@ -64,6 +64,7 @@ public class MeasurementsActivity extends AppCompatActivity {
     ArrayList<DataPair> hrvArrayList;
     ArrayList<DataPair> tempArrayList;
     ArrayList<DataPair> edaArrayList;
+    ArrayList<double[]> featureList;
     TextView nameTextView;
     TextView stressTextView;
     TextView hrTextView;
@@ -137,7 +138,7 @@ public class MeasurementsActivity extends AppCompatActivity {
             hrIS = getResources().openRawResource(R.raw.hr_person_1);
             hrvIS = getResources().openRawResource(R.raw.hrv_person_1);
             tempIS = getResources().openRawResource(R.raw.temp_person_1);
-            edaIS = getResources().openRawResource(R.raw.eda_scl_person_1);
+            edaIS = getResources().openRawResource(R.raw.eda_scl_person_2);
             featuresIS = getResources().openRawResource(R.raw.featuresperson1);
         } else{
             hrIS = getResources().openRawResource(R.raw.hr_person_2);
@@ -184,8 +185,8 @@ public class MeasurementsActivity extends AppCompatActivity {
             double[] currentFeatures = patientFeatures.get(intervalCounter / 10);
             String hr = String.valueOf((int) Math.round(currentFeatures[25]));
             String temp = String.valueOf((int) Math.round(currentFeatures[34]));
-            hrTextView.setText("Heart rate: " + hr);
-            tempTextView.setText("Temperature: " + temp);
+            hrTextView.setText("Mean heart rate (last 10s): " + hr);
+            tempTextView.setText("Mean temperature (last 10s): " + temp);
             if (currentFeatures[39] == 0.0) {
                 stressTextView.setText("Not stressed");
                 stressTextView.setTextColor(Color.GREEN);
