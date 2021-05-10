@@ -163,33 +163,11 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
                 Intent intent = new Intent(PatientListActivity.this, MeasurementsActivity.class);
                 Patient patient = patients.get(position);
                 intent.putExtra("name", patient.getUser().getFullName());
-               // Bundle bundle = new Bundle();
                 if (position == 0){
-                    //intent.putExtra("features", firstPersonFeatures);
                     intent.putExtra("pid","1");
-                    //intent.putExtra("hr", hrFirstPerson.toArray(new DataPoint[0]));
-                    //intent.putExtra("hrv", hrvFirstPerson.toArray(new DataPoint[0]));
-                    //intent.putExtra("temp", tempFirstPerson.toArray(new DataPoint[0]));
-                   // intent.putExtra("hrv", hrvFirstPerson);
-                   // intent.putExtra("hr", hrFirstPerson);
-                   // intent.putExtra("temp", tempFirstPerson);
-                    //bundle.putParcelableArray("hr", (Parcelable[]) hrFirstPerson.toArray(new DataPoint[0]));
-                    //bundle.putParcelableArray("hrv", (Parcelable[]) hrvFirstPerson.toArray(new DataPoint[0]));
-                    //bundle.putParcelableArray("temp", (Parcelable[]) tempFirstPerson.toArray(new DataPoint[0]));
                 } else{
-                    //intent.putExtra("features", secondPersonFeatures);
                     intent.putExtra("pid","2");
-                    //intent.putExtra("hr", hrSecondPerson.toArray(new DataPoint[0]));
-                    //intent.putExtra("hrv", hrvSecondPerson.toArray(new DataPoint[0]));
-                    //intent.putExtra("temp", tempSecondPerson.toArray(new DataPoint[0]));
-                    //bundle.putParcelableArray("hr", (Parcelable[]) hrSecondPerson.toArray(new DataPoint[0]));
-                    //bundle.putParcelableArray("hrv", (Parcelable[]) hrvSecondPerson.toArray(new DataPoint[0]));
-                    //bundle.putParcelableArray("temp", (Parcelable[]) tempSecondPerson.toArray(new DataPoint[0]));
-                    //intent.putExtra("hrv", hrvSecondPerson);
-                    //intent.putExtra("hr", hrSecondPerson);
-                    //intent.putExtra("temp", tempSecondPerson);
                 }
-                //intent.putExtra("measurements", bundle);
                 intent.putExtra("intervalcounter", intervalCounter);
                 startActivity(intent);
             }

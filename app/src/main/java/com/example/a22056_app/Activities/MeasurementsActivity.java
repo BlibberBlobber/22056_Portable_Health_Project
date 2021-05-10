@@ -88,11 +88,7 @@ public class MeasurementsActivity extends AppCompatActivity {
         edaGraphView = findViewById(R.id.edaGraphView);
         Bundle extras = getIntent().getExtras();
         patientName = extras.get("name").toString();
-        //patientFeatures = (ArrayList<double[]>) extras.get("features");
         pid = extras.get("pid").toString();
-        //intervalCounter = extras.getInt("intervalcounter");
-        double test = Double.parseDouble("0.250123653846154");
-        Log.d("DH","Double test " + test);
 
         nameTextView.setText("Patient name: " + patientName);
         getPatientData();
@@ -155,7 +151,6 @@ public class MeasurementsActivity extends AppCompatActivity {
             patientFeatures = parser.getData(featuresIS);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("DHREADER","Error appeared while calling getMeasurements()");
         }
 
         InputStream inputStream = getResources().openRawResource(R.raw.featuredata_tp2_s6);
@@ -198,52 +193,19 @@ public class MeasurementsActivity extends AppCompatActivity {
         }
         featuresCounter ++;
 
-        /*int seconds;
-        if (intervalCounter == 0){
-            this.date = new Date();
-            seconds = 0;
-        } else {
-            //seconds = Math.round(((new Date()).getTime() - this.date.getTime())/1000);
-            seconds = interval;
-        } */
-        /* DataPair hrDataPair = hrArrayList.get(intervalCounter);
-        DataPair hrvDataPair = hrvArrayList.get(intervalCounter);
-        DataPair tempDataPair = tempArrayList.get(intervalCounter);
-        hrTextView.setText("Heart rate: " + Math.round(hrDataPair.getValue()));
-        stressTextView.setText("HRV: " + Math.round(hrvDataPair.getValue()));
-        tempTextView.setText("Temperature: " + Math.round(tempDataPair.getValue())); */
-        //int seconds = Math.round(((new Date()).getTime() - this.date.getTime())/1000);
-        /*try {
-            String string = hrArrayList.get(intervalCounter).getDate().replace("'","");
-            //hrDate = format.parse(string);
-            seconds = Math.round(((new Date()).getTime() - this.date.getTime())/1000);
-            Log.d("DATE", "Seconds passed " + seconds);
-           // date = displayFormat.parse(displayFormat.format(date));
-           // Log.d("DATE", "Date.getTime() " + hrDate.getTime());
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } */
         for (int i = intervalCounter*8; i < intervalCounter*8+8; i ++){
-            //Log.d("DH_TEST", "For loop A counter " + i);
             double s = intervalCounter + (i - intervalCounter*8)*hrTS;
             hrSignal.appendData(new DataPoint(s, hrArrayList.get(i).getValue()), true, 100000, true);
             hrvSignal.appendData(new DataPoint(s, hrvArrayList.get(i).getValue()), true, 100000, true);
 
         }
         for (int i = intervalCounter*4; i < intervalCounter*4+4; i ++){
-            //Log.d("DH_TEST", "For loop B counter " + i);
             double s = intervalCounter + (i - intervalCounter*4)*tempTS;
             tempSignal.appendData(new DataPoint(s, tempArrayList.get(i).getValue()), true, 100000, true);
             edaSignal.appendData(new DataPoint(s, edaArrayList.get(i).getValue()), true, 10000, true);
 
 
     }
-
-        //hrSignal.appendData(new DataPoint(seconds, hrArrayList.get(intervalCounter).getValue()), false, 100000, true);
-        //hrvSignal.appendData(new DataPoint(seconds, hrvArrayList.get(intervalCounter).getValue()), false, 100000, true);
-        //tempSignal.appendData(new DataPoint(seconds, tempArrayList.get(intervalCounter).getValue()), false, 100000, true);
-        Log.d("DH_TEST","Series count " + hrvGraphView.getSeries().size());
         hrGraphView.addSeries(hrSignal);
         hrvGraphView.addSeries(hrvSignal);
         tempGraphView.addSeries(tempSignal);

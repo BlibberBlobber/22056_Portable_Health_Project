@@ -87,23 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("DH_LOGIN", "Password: " + pwordTextView.getText().toString());
                 DatabaseHandler handler = new DatabaseHandler();
                 handler.login(unameTextView.getText().toString(), pwordTextView.getText().toString(), LoginActivity.this);
-               /* DatabaseHandler.loginTest(pwordTextView.getText().toString(), pwordTextView.getText().toString(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            Intent intent;
-                            if (system.equals("healthcare")) {
-                                //Til patient liste
-                                intent = new Intent(LoginActivity.this, PatientListActivity.class);
-                            } else {
-                                //Til patient detail
-                                intent = new Intent(LoginActivity.this, MeasurementsActivity.class);
-                            }
-                            intent.putExtra("User", DatabaseHandler.getCurrentUser());
-                            startActivity(intent);
-                        }
-                    }
-                });*/
             }
         });
         signUpButton.setOnClickListener(new View.OnClickListener() {
