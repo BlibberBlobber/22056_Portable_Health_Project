@@ -13,7 +13,12 @@ import com.example.a22056_app.Models.Patient;
 import com.example.a22056_app.Tools.Notification;
 
 import java.util.ArrayList;
-
+//   Developed with Java 1.8 . Please send bug reports to
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+//   Adapter to handle presentation of patient data in listview
 public class PatientListAdapter extends BaseAdapter {
     Notification notification = new Notification();
     private Context context;
@@ -60,15 +65,6 @@ public class PatientListAdapter extends BaseAdapter {
         this.secondPersonFeatures = secondPersonFeatures;
     }
 
-
-
-    public PatientListAdapter(Context ctx, ArrayList<Patient> patients, double[] firstPersonFeatures, double[] secondPersonFeatures){
-        this.context = ctx;
-        this.patients = patients;
-        layoutInflater = LayoutInflater.from(context);
-        this.firstPersonFeatures = firstPersonFeatures;
-        this.secondPersonFeatures = secondPersonFeatures;
-    }
     public PatientListAdapter(Context ctx, ArrayList<Patient> patients, double[] firstPersonFeatures, double[] secondPersonFeatures, DataPair hrFirstPerson, DataPair hrSecondPerson, DataPair tempFirstPerson, DataPair tempSecondPerson, DataPair hrvFirstPerson, DataPair hrvSecondPerson){
         this.context = ctx;
         this.patients = patients;
@@ -86,7 +82,7 @@ public class PatientListAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         return patients.size();
-    }
+    } // number of listview cells is determined by the number of patients
 
     @Override
     public Object getItem(int position) {
@@ -101,7 +97,7 @@ public class PatientListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = layoutInflater.inflate(R.layout.patient_list_item, parent, false);
+            convertView = layoutInflater.inflate(R.layout.patient_list_item, parent, false); // inflates custom cell for listview
         }
 
         TextView nameTextView = convertView.findViewById(R.id.nameTextview);
@@ -117,17 +113,17 @@ public class PatientListAdapter extends BaseAdapter {
         } else{
             currentPerson = secondPersonFeatures;
         }
-        hr = String.valueOf((int) Math.round(currentPerson[25]));
+        hr = String.valueOf((int) Math.round(currentPerson[25])); // removes decimals and converts to string
         temp = String.valueOf((int) Math.round(currentPerson[34]));
         tempTextView.setText("Temperature: " + temp);
         hrTextView.setText("Heart rate: " + hr);
-        if (currentPerson[39] == 0.0){
+        if (currentPerson[39] == 0.0){ // when this values is 0.0 the patient has been categorized as not stressed
             stressTextView.setText("Not stressed");
             stressTextView.setTextColor(Color.GREEN);
         } else {
             stressTextView.setText("Stressed");
             stressTextView.setTextColor(Color.RED);
-            doNotification(nameTextView.getText().toString());
+            doNotification(nameTextView.getText().toString()); // notify user about patient being stressed
         }
 
         nameTextView.setText(patients.get(position).getUser().getFullName());

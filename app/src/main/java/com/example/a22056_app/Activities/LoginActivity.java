@@ -26,7 +26,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
+//   Developed with Java 1.8 . Please send bug reports to
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+//  Activity for login. From here users are able to login or sign up. If log in is successful navigates to PatientListActivity
 public class LoginActivity extends AppCompatActivity {
 
     TextView headerTextView, unameTextView, pwordTextView;
@@ -39,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        system = Configuration.getConfigValue(LoginActivity.this,"system");
+        system = Configuration.getConfigValue(LoginActivity.this,"system"); // app configured for patients or healthcare professionals
         headerTextView = findViewById(R.id.headerTextView);
 
         DataParser parser = new DataParser();

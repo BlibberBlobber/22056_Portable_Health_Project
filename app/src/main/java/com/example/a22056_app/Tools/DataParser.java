@@ -23,21 +23,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+//   Class for parsing .csv files of patient data (raw measurements and features) and creating arraylists with the contained information
+
 public class DataParser {
 
-    InputStream inputStream;
-
-    public ArrayList<double[]> getData(InputStream inputStream) throws IOException { //not void -> ArrayList<[]double>
+    public ArrayList<double[]> getData(InputStream inputStream) throws IOException {
 
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader reader = new CSVReader(inputStreamReader);
-            reader.getLinesRead();
             String[] nextLine;
             ArrayList<double[]> valueArray = new ArrayList<>();
-            int counter = 0;
+            int counter = 0; // reader object has no recollection of where it is the document, this counter is declared to keep track of the line number.
             while ((nextLine = reader.readNext()) != null) {
-                if (counter != 0) {
+                if (counter != 0) { // features .csv files have titles for each feature on the first line. Not to be included in arraylist with feature values.
                     double[] vals = new double[nextLine.length];
                     for (int i = 0; i < nextLine.length; i++) {
                         if (i != 40) {
@@ -50,10 +53,6 @@ public class DataParser {
                 counter ++;
 
             }
-           /* Log.d("DATAREADER", "Size of data array " + valueArray.size());
-            Log.d("DATAREADER", "Sample from arraylist " + valueArray.get(10)[0]);
-            Log.d("DATAREADER", "Sample date from arraylist " + valueArray.get(10)[1]); */
-
             return  valueArray;
 
         } catch (IOException | CsvValidationException e) {
@@ -93,11 +92,10 @@ public class DataParser {
     }
     
 
-    public ArrayList<DataPair> getMeasurements(InputStream inputStream) throws  IOException{
+    public ArrayList<DataPair> getMeasurements(InputStream inputStream) throws  IOException{ // method for .csv files of patient measurements
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             CSVReader reader = new CSVReader(inputStreamReader);
-            reader.getLinesRead();
             String[] nextLine;
             ArrayList<DataPair> valueArray = new ArrayList<>();
             int counter = 0;
@@ -116,10 +114,6 @@ public class DataParser {
                 valueArray.add(dataPair);
                 counter ++;
             }
-            //Log.d("DATAREADER", "Size of data array in get measurements " + valueArray.size());
-            //Log.d("DATAREADER", "Sample value from arraylist in measurements" + valueArray.get(10).getValue());
-            //Log.d("DATAREADER", "Sample date from arraylist in measurements" + valueArray.get(10).getDate());
-
             return  valueArray;
         } catch (IOException | CsvValidationException e) {
             e.printStackTrace();

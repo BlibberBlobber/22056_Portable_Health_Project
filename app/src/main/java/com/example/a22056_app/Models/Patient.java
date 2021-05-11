@@ -5,6 +5,16 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Map;
 
+        //   Developed with Java 1.8 . Please send bug reports to
+        //   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+        //   Year  :  2021
+        //   University  :  Technical University of Denmark
+        //   ***********************************************************************
+
+        //   Patient is a model class for storing patient information in a object. The class has two constructors:
+        //   - First constructor takes an user object, a string representing the patients CPR number and a string for the patient location as argumemts.
+        //   - Second constructor takes a Map<String, Object> object as it's argument. This is a practical way to instantiate an patient object since this is format we get after calling getData() on each QueryDocumentSnapshot object retrieved from our Firebase Firestore.
+
 public class Patient{
 
     private User user;
@@ -23,19 +33,13 @@ public class Patient{
         Log.d("DH_DB","Map " + map.keySet().toString());
         this.user = new User();
         user.setFullName(map.get("name").toString());
-       // user.setPassword(map.get("password").toString());
-       // user.setUserId((int) map.get("userid"));
-       // user.setUsername(map.get("username").toString());
         user.setUserType(map.get("userType").toString());
         this.cpr = map.get("cpr").toString();
         this.location = map.get("location").toString();
         this.diagnoses = (ArrayList<String>) map.get("diagnoses");
         this.medications = (ArrayList<String>) map.get("medications");
     }
-    /* Måske god idé at lave en metode som kan bygge et patient object fra en et firebaseuser object.
-  /*  public Patient(FirebaseUser user){
 
-    } */
     public void addDiagnosis(String diagnosis){
         diagnoses.add(diagnosis);
     }
@@ -53,8 +57,6 @@ public class Patient{
     public void setCpr(String cpr) {
         this.cpr = cpr;
     }
-
-
     public String getCpr() {
         return cpr;
     }

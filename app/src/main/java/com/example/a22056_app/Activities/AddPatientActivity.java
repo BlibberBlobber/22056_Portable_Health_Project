@@ -8,7 +8,12 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.a22056_app.R;
-
+//   Developed with Java 1.8 . Please send bug reports to
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+//   Activity to simulate how patients could be added. The functionality to do so has not been implemented.
 public class AddPatientActivity extends AppCompatActivity {
     Button addPatientButton;
 

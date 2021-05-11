@@ -31,6 +31,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+//   Developed with Java 1.8 . Please send bug reports to
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+//   Activity to show more detailed measurements for a patients. Four graphs are in this view, used for heart rate, heart rate variability, temperature and EDA measurements.
+//   Four textfields in top of activity to show patient name, average heart rate, average heart rate variability and stress status for the last 10 seconds.
+//   Also notifications enabled for when the patient has been detected with stress
 
 public class MeasurementsActivity extends AppCompatActivity {
 
@@ -174,8 +182,6 @@ public class MeasurementsActivity extends AppCompatActivity {
         }
     };
     private void updateValues(){
-        Log.d("DH_TEST", "Intervl counter " + intervalCounter);
-        Log.d("DH_TEST", "Features counter " + featuresCounter);
         if (featuresCounter == 10 || featuresCounter == 0) {
             double[] currentFeatures = patientFeatures.get(intervalCounter / 10);
             String hr = String.valueOf((int) Math.round(currentFeatures[25]));

@@ -35,15 +35,20 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.ArrayList;
-
-
+//   Developed with Java 1.8 . Please send bug reports to
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+//   Activity to show patients and their current state in a listview for user's to get an overview. Navigation to MeasurementsActivity is performed when user clicks on a patient in the list
+//   Also able to navigate to AddPatientsActivity when user presses addPatientButton.
 
 public class PatientListActivity extends AppCompatActivity implements EmpaDataDelegate, EmpaStatusDelegate {
 
-    private EmpaDeviceManager deviceManager;
-    private ListView listView;
+    private EmpaDeviceManager deviceManager; // not used
+    private ListView listView; // list to show patients
     private Button addPatientButton;
-    private PatientListAdapter listAdapter;
+    private PatientListAdapter listAdapter; // adapter to handle how data is incorporated into list
     private ArrayList<double[]> firstPersonFeatures;
     private ArrayList<double[]> secondPersonFeatures;
     private ArrayList<DataPair> hrFirstPerson;
@@ -55,19 +60,19 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private ArrayList<Patient> patients = new ArrayList<>();
    // Toolbar toolbar;
     ProgressBar progressBar;
-    private int mInterval = 10000; // 10 sekunder
-    private Handler mHandler;
-    private int intervalCounter = 0;
+    private int mInterval = 10000; // 10 seconds
+    private Handler mHandler; // handler to perform updates
+    private int intervalCounter = 0; // number of updates
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_list);
 
-        deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this);
+        deviceManager = new EmpaDeviceManager(getApplicationContext(), this, this); // unused
         deviceManager.authenticateWithAPIKey("81eb4118b7654dd68f7d47b280e7da2b");
 
-        DataParser parser = new DataParser();
+        DataParser parser = new DataParser(); // new instance of DataParser to convert .csv files to ArrayLists
         InputStream firstInputStream = getResources().openRawResource(R.raw.featuresperson1);
         InputStream secondInputStream = getResources().openRawResource(R.raw.featuresperson2);
         InputStream hrFirstPersonIS = getResources().openRawResource(R.raw.hr_person_1);
@@ -92,10 +97,6 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         }
 
         mHandler = new Handler();
-
-       // toolbar = findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
-
         listView = findViewById(R.id.patientListView);
         progressBar = findViewById(R.id.progressBar2);
         addPatientButton = findViewById(R.id.addButton);
@@ -103,24 +104,23 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PatientListActivity.this, AddPatientActivity.class);
-                startActivity(intent);
+                startActivity(intent); // go to add patients activity when user presses Add Patient button
             }
         });
-        progressBar.setVisibility(View.VISIBLE);
-        DatabaseHandler.getCollection("users", new OnCompleteListener<QuerySnapshot>() {
+        progressBar.setVisibility(View.VISIBLE); // show progress bar before attempting to retrieve patients from Firestore
+        DatabaseHandler.getCollection("users", new OnCompleteListener<QuerySnapshot>() { // loading patients from Firebase Firestore
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 progressBar.setVisibility(View.INVISIBLE);
                 if (!task.isSuccessful()){
                     Log.d("Firestore", "Error getting data " + task.getException().getMessage());
                 }else {
-                   // ArrayList<Patient> patients = new ArrayList<>();
                     for (QueryDocumentSnapshot document: task.getResult()){
                         Log.d("Firestore",document.getId() + " => " + document.getData());
                         Patient patient = new Patient(document.getData());
                         patients.add(patient);
                     }
-                    setListAdapter(patients);
+                    setListAdapter(patients); // set data for listview in listadapter
                     startRepeatingTask();
                     setOnItemClick();
                 }
@@ -148,7 +148,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
         listAdapter.setTempSecondPerson(tempSecondPerson.get(intervalCounter));
         listAdapter.setHrvFirstPerson(hrvFirstPerson.get(intervalCounter));
         listAdapter.setHrvSecondPerson(hrvSecondPerson.get(intervalCounter));
-        listAdapter.notifyDataSetChanged();
+        listAdapter.notifyDataSetChanged(); // inform adapter that variable values have changed and that view needs to be updated
     }
 
     @Override
@@ -164,9 +164,9 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
                 Patient patient = patients.get(position);
                 intent.putExtra("name", patient.getUser().getFullName());
                 if (position == 0){
-                    intent.putExtra("pid","1");
+                    intent.putExtra("pid","1"); // if user presses click on first person on list pass pid = 1
                 } else{
-                    intent.putExtra("pid","2");
+                    intent.putExtra("pid","2"); // if user presses click on second person on list pass pid = 2
                 }
                 intent.putExtra("intervalcounter", intervalCounter);
                 startActivity(intent);
@@ -177,7 +177,7 @@ public class PatientListActivity extends AppCompatActivity implements EmpaDataDe
     private void setSupportActionBar(Toolbar toolbar) {
     }
 
-    private void setListAdapter(ArrayList<Patient> patients){
+    private void setListAdapter(ArrayList<Patient> patients){ // pass data to listadapter to show it on view
 
         listAdapter = new PatientListAdapter(this, patients, firstPersonFeatures.get(0), secondPersonFeatures.get(0), hrFirstPerson.get(0), hrSecondPerson.get(0), tempFirstPerson.get(0), tempSecondPerson.get(0), hrvFirstPerson.get(0), hrvSecondPerson.get(0));
         listView.setAdapter(listAdapter);

@@ -9,6 +9,11 @@ import android.widget.Button;
 
 import com.example.a22056_app.R;
 
+//   Author  :  Daniel Hansen, Oliver Rasmussen, Morten Vorborg & Malin Schnack
+//   Year  :  2021
+//   University  :  Technical University of Denmark
+//   ***********************************************************************
+
 public class OverviewActivity extends AppCompatActivity {
 
     Button measurementsButton;
